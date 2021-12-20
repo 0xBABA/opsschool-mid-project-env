@@ -10,19 +10,8 @@ variable "global_name_prefix" {
   description = "1st prefix in the resources' Name tags"
 }
 
-## vpc
-variable "vpc_cidr_block" {
-  default = "10.0.0.0/16"
+variable "pem_key_name" {
+  default     = "opsschool_mid_project.pem"
+  type        = string
+  description = "name of ssh key to attach to instances"
 }
-
-variable "private_subnet_cidrs" {
-  description = "CIDR ranges for private subnets"
-  default     = ["10.0.11.0/24", "10.0.12.0/24"]
-}
-
-variable "public_subnet_cidrs" {
-  description = "CIDR ranges for private subnets"
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
-}
-
-## ec2 instances
