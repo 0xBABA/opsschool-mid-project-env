@@ -5,8 +5,8 @@ resource "aws_instance" "consul_server" {
   key_name             = aws_key_pair.mid_project_key.key_name
   iam_instance_profile = aws_iam_instance_profile.consul-join.name
   # TODO: move consul servers in private subnet and allow access via ALB
-  subnet_id                   = element(module.vpc.public_subnet_id, count.index)
-  associate_public_ip_address = true
+  subnet_id                   = element(module.vpc.private_subnet_id, count.index)
+  associate_public_ip_address = false
 
   vpc_security_group_ids = [aws_security_group.common-sg.id, aws_security_group.consul-sg.id]
 

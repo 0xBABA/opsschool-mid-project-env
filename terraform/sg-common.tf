@@ -1,9 +1,12 @@
 resource "aws_security_group" "common-sg" {
   name        = "common-sg"
-  description = "Allow ssh, consul and tcp inbound traffic"
+  description = "Allow ssh, ping and egress traffic"
   vpc_id      = module.vpc.vpc_id
   tags = {
     Name = format("%s-common-sg", var.global_name_prefix)
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 

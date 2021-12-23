@@ -1,9 +1,12 @@
 resource "aws_security_group" "consul-sg" {
   name        = "consul-sg"
-  description = "Allow ssh, consul and tcp inbound traffic"
+  description = "Allow consul ports, and traffic within the sg"
   vpc_id      = module.vpc.vpc_id
   tags = {
     Name = format("%s-consul-sg", var.global_name_prefix)
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
