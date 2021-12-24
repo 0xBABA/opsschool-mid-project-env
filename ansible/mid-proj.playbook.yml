@@ -1,0 +1,13 @@
+---
+- name: opsschool mid-project playbook
+  hosts: service_instance_true
+  gather_facts: yes
+
+  tasks:
+    - name: include common role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: common
+      tags:
+        - include_role
