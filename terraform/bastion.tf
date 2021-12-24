@@ -11,4 +11,10 @@ resource "aws_instance" "bastion_host" {
     Name         = format("%s-bastion-host", var.global_name_prefix)
     bastion_host = "true"
   }
+
+  #TODO: change to templatefile
+  provisioner "local-exec" {
+    command = "./scripts/gen_ansible_ssh_config.sh ${self.public_ip}"
+  }
 }
+

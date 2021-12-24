@@ -1,0 +1,16 @@
+---
+plugin: aws_ec2
+regions: 
+  - us-east-1
+filters:
+  tag:purpose:
+    - mid-project
+  instance-state-name: running
+hostnames:
+  - network-interface.association.public-ip
+  - network-interface.addresses.private-ip-address
+keyed_groups:
+  - prefix: consul_server
+    key: tags['consul_server']
+  - prefix: bastion_host
+    key: tags['bastion_host']
