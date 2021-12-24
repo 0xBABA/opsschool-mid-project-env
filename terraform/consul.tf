@@ -11,8 +11,9 @@ resource "aws_instance" "consul_server" {
   vpc_security_group_ids = [aws_security_group.common-sg.id, aws_security_group.consul-sg.id]
 
   tags = {
-    Name          = format("%s-consul-server-${count.index}", var.global_name_prefix)
-    consul_server = "true"
+    Name                = format("%s-consul-server-${count.index}", var.global_name_prefix)
+    consul_server       = "true"
+    is_service_instance = "true"
   }
 
 }
