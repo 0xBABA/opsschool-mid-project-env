@@ -1,0 +1,106 @@
+---
+- name: add Hashicorp's official GPG key
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+  tags: 
+    - consul_install
+    - add_hashicorp_repo
+
+- name: add Hashicorp main repository to apt
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ansible_distribution_release}} main"
+    state: present
+  tags: 
+    - consul_install
+    - add_hashicorp_repo
+
+- name: install dependencies on target ec2 instances
+  apt:
+    name: 
+    - dnsmasq
+    - consul=1.8.5
+    state: present
+    update_cache: yes
+  tags:
+   - consul_install
+   - dnsmasq_setup
+
+- name: configure dnsmasq
+  template:
+    src: dnsmasq.conf.j2
+    dest: "{{ dnsmasq_configuration_file }}"
+    mode: "0644"
+  notify:
+    - test dnsmasq configuration
+    - restart dnsmasq
+  tags:
+    - dnsmasq_setup
+
+- name: configure resolved.conf
+  template: 
+    src: resolved.conf.j2
+    dest: /etc/systemd/resolved.conf
+  notify: 
+    - restart systemd-resolved
+  tags:
+    - dnsmasq_setup
+
+- name: flush handlers
+  meta: flush_handlers
+
+- name: create consul group
+  group:
+    name: consul
+    state: present
+  tags:
+   - consul_setup
+
+- name: create consul user
+  user:
+    name: consul
+    group: consul
+  tags: 
+    - consul_setup
+
+- name: setup consul directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: consul
+    owner: consul
+  loop:
+    - /opt/consul
+    - /etc/consul.d
+    - /run/consul
+  tags: 
+    - consul_setup
+
+- name: configure consul service
+  copy:
+    src: ./files/consul.service
+    dest: /etc/systemd/system/consul.service
+    group: consul
+    owner: consul
+  tags:
+   - consul_setup
+
+- name: configure consul
+  become: yes
+  become_user: consul
+  template:
+    src: consul.config.json.j2
+    dest: "{{ consul_configuration_file_path }}"
+  tags:
+    - consul_setup
+    - consul_config
+
+- name: enable and start consul.d service
+  systemd:
+    daemon_reload: yes
+    name: consul
+    enabled: yes
+    state: started
+  tags:
+   - consul_setup
+

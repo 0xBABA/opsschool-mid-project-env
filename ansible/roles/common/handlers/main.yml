@@ -1,0 +1,15 @@
+---
+- name: test dnsmasq configuration
+  ansible.builtin.command:
+    cmd: dnsmasq --test
+
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted
+
+- name: restart systemd-resolved
+  service:
+    name: systemd-resolved.service
+    state: restarted
+
