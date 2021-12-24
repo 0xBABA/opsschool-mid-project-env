@@ -28,3 +28,8 @@ remove the .exmaple postfix from the file and add your bastion ip
 
 # POINTS FOR IMPROVEMENT
 - automate the ansinble.ssh.config creation (i.e. get the bastion ip and generate a file)
+
+# useful commands
+- create an SSH tunnel to a consul machine that holds the UI:</br>
+`ssh -F ansible.ssh.config -N -f -L 8500:localhost:8500 ubuntu@<consul server private ip>` 
+</br>then go to http://localhost:8500/ui
