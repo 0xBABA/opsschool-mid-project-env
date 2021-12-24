@@ -11,5 +11,4 @@ resource "aws_instance" "bastion_host" {
     Name         = format("%s-bastion-host", var.global_name_prefix)
     bastion_host = "true"
   }
-
 }

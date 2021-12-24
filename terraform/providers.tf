@@ -21,7 +21,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      wner    = "yoad"
+      owner   = "yoad"
       purpose = "mid-project"
       context = "opsschool"
     }
