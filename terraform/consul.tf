@@ -15,7 +15,6 @@ resource "aws_instance" "consul_server" {
     consul_server       = "true"
     is_service_instance = "true"
   }
-
 }
 
 
