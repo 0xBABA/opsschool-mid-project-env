@@ -15,12 +15,11 @@ tf apply --auto-aprove
 
 # install ansible dependencies
 cd ../ansible
+pip3 install docker
 ansible-galaxy collection install amazon.aws
-
-# ansible ssh configuration
-eval "$(ssh-agent -s)"
-ssh-add ../terraform/opsschool_mid_project.pem
-remove the .exmaple postfix from the file and add your bastion ip
+ansible-galaxy collection install community.docker
+#TODO: there's an issue with bastion not automatically added to known hosts
+ansible-playbook mid-proj.playbook.yml
 
 ```
 # points to put here
