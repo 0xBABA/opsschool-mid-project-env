@@ -10,4 +10,13 @@
       include_role:
         name: common
       tags:
-        - include_role
+        - include_common_role
+  
+    - name: include jenkins_server role
+      vars:
+        ansible_become: yes
+      include_role: 
+        name: jenkins-server
+      when: inventory_hostname in groups.jenkins_server_true
+      tags: 
+        - include_jenkins_role

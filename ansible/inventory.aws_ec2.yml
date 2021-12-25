@@ -10,9 +10,11 @@ hostnames:
   - network-interface.association.public-ip
   - network-interface.addresses.private-ip-address
 keyed_groups:
+  - prefix: bastion_host
+    key: tags['bastion_host']
   - prefix: service_instance
     key: tags['is_service_instance']
   - prefix: consul_server
     key: tags['consul_server']
-  - prefix: bastion_host
-    key: tags['bastion_host']
+  - prefix: jenkins_server
+    key: tags['jenkins_server']
