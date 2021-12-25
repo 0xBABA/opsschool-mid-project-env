@@ -1,0 +1,88 @@
+---
+- name: update apt package index and install dependencies
+  apt:
+    name: 
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - python3-pip
+    state: latest
+    update_cache: yes
+  tags:
+    - include_jenkins_role
+
+- name: add docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  tags:
+    - include_jenkins_role
+
+- name: install docker python sdk
+  pip:
+    name: docker
+  tags:
+    - include_jenkins_role
+
+- name: add docker stable repository to apt
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+  tags:
+    - include_jenkins_role
+
+- name: install docker 
+  apt:
+    name: 
+    - docker-ce
+    - docker-ce-cli 
+    - containerd.io
+    state: present
+    update_cache: yes
+  notify:
+  - start docker daemon
+  tags:
+    - include_jenkins_role
+
+- name: adding user to group docker
+  user:
+    name: '{{ item }}'
+    groups: docker
+    append: yes
+  loop: "{{ ubuntu_docker_users }}"
+  tags:
+    - include_jenkins_role
+
+- name: Flush handlers
+  meta: flush_handlers
+  tags:
+    - include_jenkins_role
+
+- name: create jenkins home dir
+  file: 
+    path: /home/ubuntu/jenkins_home
+    state: directory
+    group: ubuntu
+    owner: ubuntu
+  tags:
+    - include_jenkins_role
+
+- name: docker run jenkins
+  docker_container:
+    name: jenkins
+    image: jenkins/jenkins
+    detach: yes
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    restart_policy: always
+    container_default_behavior: compatibility
+    env: 
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    volumes:
+      - /home/ubuntu/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    state: started
+  tags:
+    - include_jenkins_role
