@@ -19,6 +19,7 @@ pip3 install docker
 ansible-galaxy collection install amazon.aws
 ansible-galaxy collection install community.docker
 #TODO: there's an issue with bastion not automatically added to known hosts
+ssh-add ../terraform/opsschool_mid_project.pem
 ansible-playbook mid-proj.playbook.yml
 
 ```
@@ -26,7 +27,9 @@ ansible-playbook mid-proj.playbook.yml
 - vpc module sourced from github repo
 
 # POINTS FOR IMPROVEMENT
-- automate the ansinble.ssh.config creation (i.e. get the bastion ip and generate a file)
+- consider using ebs instead of s3 for jenkins configuration backup
+- mention UIs access via ALB if i dont get there. mention in instarcution how to create ssh tunnel for consul and jenkins servers
+- jenkins roles have a lot in common - consider using a jenkins common role for these
 
 # useful commands
 - create an SSH tunnel to a consul machine that holds the UI:</br>
