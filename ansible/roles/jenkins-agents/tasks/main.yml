@@ -1,0 +1,69 @@
+---
+- name: update apt package index and install dependencies
+  apt:
+    name: 
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - python3-pip
+    - openjdk-11-jdk
+    state: latest
+    update_cache: yes
+  tags:
+    - include_jenkins_agent_role 
+
+## add install docker part
+- name: add docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  tags:
+    - include_jenkins_agent_role
+
+- name: add docker stable repository to apt
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+  tags:
+    - include_jenkins_agent_role
+
+- name: install docker
+  apt:
+    name:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    state: present
+    update_cache: yes
+  notify:
+  - start docker daemon
+  tags:
+    - include_jenkins_agent_role
+
+- name: adding user to group docker
+  user:
+    name: '{{ item }}'
+    groups: docker
+    append: yes
+  loop: "{{ ubuntu_docker_users }}"
+  tags:
+    - include_jenkins_agent_role
+
+- name: Flush handlers
+  meta: flush_handlers
+  tags:
+    - include_jenkins_agent_role
+
+- name: copy jenkins service config file to consul.d
+  become: yes
+  become_user: consul
+  copy:
+    src: ./files/jenkins-agent-service.json
+    dest: /etc/consul.d/jenkins-agent-service.json
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
+  tags:
+  - include_jenkins_agent_role
