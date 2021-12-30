@@ -1,2 +1,4 @@
 terraform/opsschool_mid_project.pem
 ansible/ansible.ssh.config
+opsschool-kandula-app.2021-12-30.private-key.pem
+kandula-app-jenkins-github-integration-converted.pem

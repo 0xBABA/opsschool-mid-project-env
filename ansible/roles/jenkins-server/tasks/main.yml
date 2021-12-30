@@ -19,11 +19,12 @@
   tags:
     - include_jenkins_role
 
+# TODO: install virtualenv==20.11.2?
 - name: install python packages
   pip:
     name: 
       - docker==5.0.3
-      - boto3
+      - boto3==1.20.26
   tags:
     - include_jenkins_role
 
