@@ -9,8 +9,8 @@
     "checks": [
       {
         "id": "jenkins",
-        "name": "NGINX responds at port 8080",
-        "http": "http://localhost:8080",
+        "name": "jenkins responds at port 50000",
+        "http": "http://localhost:50000",
         "interval": "20s"
       }
     ]

@@ -19,9 +19,11 @@
   tags:
     - include_jenkins_role
 
-- name: install docker python sdk
+- name: install python packages
   pip:
-    name: docker
+    name: 
+      - docker==5.0.3
+      - boto3
   tags:
     - include_jenkins_role
 
@@ -68,6 +70,24 @@
   tags:
     - include_jenkins_role
 
+- name: download jenkins configuration from s3
+  amazon.aws.aws_s3:
+    bucket: yoad-opsschool-mid-project-jenkins
+    object: jenkins_configuration.tar
+    dest: /home/ubuntu/jenkins_configuration.tar
+    mode: get
+  tags:
+    - include_jenkins_role
+
+- name: untar jenkins configuration
+  unarchive:
+    src: /home/ubuntu/jenkins_configuration.tar
+    dest: /home/ubuntu/
+    remote_src: yes
+    owner: ubuntu
+  tags:
+    - include_jenkins_role  
+
 - name: docker run jenkins
   docker_container:
     name: jenkins
@@ -86,3 +106,16 @@
     state: started
   tags:
     - include_jenkins_role
+
+- name: copy jenkins service config file to consul.d
+  become: yes
+  become_user: consul
+  copy:
+    src: ./files/jenkins-server-service.json
+    dest: /etc/consul.d/jenkins-server-service.json
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
+  tags:
+  - include_jenkins_role

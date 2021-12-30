@@ -18,3 +18,5 @@ keyed_groups:
     key: tags['consul_server']
   - prefix: jenkins_server
     key: tags['jenkins_server']
+  - prefix: jenkins_agent
+    key: tags['jenkins_agent']
