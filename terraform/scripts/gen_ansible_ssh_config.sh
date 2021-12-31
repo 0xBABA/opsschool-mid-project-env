@@ -1,6 +1,6 @@
 #!/bin/bash
 eval "$(ssh-agent -s)"
-ssh-add ../terraform/opsschool_mid_project.pem
+ssh-add opsschool_mid_project.pem
 
 cat << EOF > ../ansible/ansible.ssh.config
 Host bastion
