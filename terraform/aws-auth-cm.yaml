@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::031034181336:role/opsschool-eks-duhwjxqk2021010511062606710000000a
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+    - rolearn: arn:aws:iam::031034181336:role/aws_cli 
+      username: aws_cli
+      groups: 
+        - system:masters
+  # mapUsers: |
+  #   - userarn: <arn:aws:iam::111122223333:user/admin>
+  #     username: <admin>
+  #     groups:
+  #       - <system:masters>
