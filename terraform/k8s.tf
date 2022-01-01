@@ -8,7 +8,7 @@ resource "kubernetes_namespace" "k8s_ns" {
       mylabel = "label-value"
     }
 
-    name = "terraform-example-namespace"
+    name = local.k8s_service_account_namespace
   }
 }
 
