@@ -6,7 +6,7 @@ resource "aws_lb" "jenkins_alb" {
   subnets            = module.vpc.public_subnet_id
 
   tags = {
-    Name = format("%s-web_alb", var.global_name_prefix)
+    Name = format("%s-jenkins_alb", var.global_name_prefix)
   }
 
   depends_on = [
