@@ -20,3 +20,5 @@ keyed_groups:
     key: tags['jenkins_server']
   - prefix: jenkins_agent
     key: tags['jenkins_agent']
+  - prefix: k8s_worker
+    key: tags['k8s']
