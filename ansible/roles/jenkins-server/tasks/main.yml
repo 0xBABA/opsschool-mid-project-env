@@ -7,6 +7,7 @@
     - gnupg
     - lsb-release
     - python3-pip
+    - unzip
     state: latest
     update_cache: yes
   tags:
@@ -59,6 +60,27 @@
 
 - name: Flush handlers
   meta: flush_handlers
+  tags:
+    - include_jenkins_role
+
+- name: Download aws cli
+  get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: /home/ubuntu/awscliv2.zip
+  tags:
+    - include_jenkins_role
+
+- name: unzip awscliv2.zip
+  unarchive:
+    src: /home/ubuntu/awscliv2.zip
+    dest: /home/ubuntu/
+    remote_src: yes
+    owner: ubuntu
+  tags:
+    - include_jenkins_role
+
+- name: install aws cli
+  cmd:  /home/ubuntu/aws/install
   tags:
     - include_jenkins_role
 

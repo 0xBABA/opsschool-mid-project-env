@@ -66,17 +66,35 @@
   apt_key:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     state: present
+  tags:
+    - include_jenkins_agent_role
 
 - name: add Kubernetes APT repository
   apt_repository:
-   repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-   state: present
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+  tags:
+    - include_jenkins_agent_role
 
 - name: install kubectl
   apt:
     name: kubectl
     state: present
     force: yes
+  tags:
+    - include_jenkins_agent_role
+
+- name: copy over kubeconfig file
+  copy:
+    src: "{{ item }}"
+    dest: /home/ubuntu/kubeconfig
+    owner: ubuntu
+    force: yes
+  with_fileglob:
+    - "../terraform/kubeconfig_mid-project-eks-*"
+  tags:
+    - include_jenkins_agent_role
+    - copy_kubeconfig
 
 - name: copy jenkins service config file to consul.d
   become: yes
