@@ -22,7 +22,8 @@ resource "aws_lb_target_group" "jenkins_alb" {
 
   health_check {
     enabled = true
-    path    = "/"
+    path    = "/login"
+    port    = 8080
   }
 
   tags = {

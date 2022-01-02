@@ -23,6 +23,7 @@ resource "aws_lb_target_group" "consul_alb" {
   health_check {
     enabled = true
     path    = "/ui"
+    port    = 8500
   }
 
   tags = {
