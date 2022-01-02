@@ -33,6 +33,10 @@ resource "aws_instance" "jenkins_agent" {
   }
 }
 
+output "jenkins_agents_arn" {
+  description = "jenkins agents arns"
+  value       = aws_instance.jenkins_agent.*.arn
+}
 
 resource "aws_security_group" "jenkins-server-sg" {
   name        = "jenkins-sg"

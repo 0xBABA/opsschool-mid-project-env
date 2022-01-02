@@ -23,3 +23,9 @@ resource "aws_iam_instance_profile" "consul-join" {
   name = "opsschool-mid-project-consul-join"
   role = aws_iam_role.consul-join.name
 }
+
+
+output "consul-join-iam-role" {
+  description = "arn for consul-join iam role"
+  value       = aws_iam_role.consul-join.arn
+}

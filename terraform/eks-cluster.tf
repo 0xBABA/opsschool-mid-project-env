@@ -17,6 +17,7 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
+  manage_aws_auth = true
   worker_groups = [
     {
       name                          = "worker-group-1"
@@ -31,6 +32,27 @@ module "eks" {
       additional_userdata           = "echo opsschool mid project"
       asg_desired_capacity          = 2
       additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
+    }
+  ]
+
+  map_users = [
+    {
+      groups   = ["system:masters"]
+      userarn  = aws_instance.jenkins_agent[0].arn
+      username = aws_instance.jenkins_agent[0].id
+    },
+    {
+      groups   = ["system:masters"]
+      userarn  = aws_instance.jenkins_agent[1].arn
+      username = aws_instance.jenkins_agent[1].id
+    }
+  ]
+
+  map_roles = [
+    {
+      rolearn  = aws_iam_role.consul-join.arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups : ["system:masters"]
     }
   ]
 
