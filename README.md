@@ -49,12 +49,12 @@ Go to jenkins UI (ALB DNS name is output of TF configuration)
 
 # Known issues:
 - When applying terraform in some cases there's an issue with dynamic tags. a consecutive apply usually does the trick. 
-</br>
+
 ```
 Error: Provider produced inconsistent final plan
- 
- When expanding the plan for <some resource> to include new values learned so far during apply, provider "registry.terraform.io/hashicorp/aws" produced an
- invalid new value for .tags_all: new element "Name" has appeared.
- 
- This is a bug in the provider, which should be reported in the provider's own issue tracker.
+When expanding the plan for <some resource> to include new values learned so far during apply, provider "registry.terraform.io/hashicorp/aws" produced an
+invalid new value for .tags_all: new element "Name" has appeared. 
+This is a bug in the provider, which should be reported in the provider's own issue tracker.
 ```
+
+Thanks!
