@@ -29,4 +29,3 @@
       when: inventory_hostname in groups.jenkins_agent_true
       tags: 
         - include_jenkins_agent_role
-        - copy_kubeconfig

@@ -65,7 +65,7 @@
 
 - name: Download aws cli
   get_url:
-    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
     dest: /home/ubuntu/awscliv2.zip
   tags:
     - include_jenkins_role
@@ -80,7 +80,9 @@
     - include_jenkins_role
 
 - name: install aws cli
-  cmd:  /home/ubuntu/aws/install
+  command: 
+    cmd: /home/ubuntu/aws/install
+    creates: /home/ubuntu/aws
   tags:
     - include_jenkins_role
 
@@ -110,6 +112,17 @@
     owner: ubuntu
   tags:
     - include_jenkins_role  
+
+# copy nodes configuration from templates to jenkins_home/nodes/jenkins-agent-{01,02}/config.xml
+# - name: configure jenkins_agents
+#   template:
+#     src: "{{ item.src }}"
+#     dest: /home/ubuntu/jenkins_home/nodes/"{{ item.dest }}"
+#   loop:
+#     - { src: agent-01-config.xml.j2, dest: jenkins-agent-01/agent-01-config.xml}
+#     - { src: agent-02-config.xml.j2, dest: jenkins-agent-02/agent-02-config.xml}
+#   tags:
+#     - include_jenkins_role
 
 - name: docker run jenkins
   docker_container:

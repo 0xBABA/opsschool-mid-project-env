@@ -94,7 +94,25 @@
     - "../terraform/kubeconfig_mid-project-eks-*"
   tags:
     - include_jenkins_agent_role
-    - copy_kubeconfig
+
+- name: Download aws-iam-autheticator
+  get_url:
+    url: https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+    dest: /usr/local/bin/aws-iam-authenticator
+    mode: '0755'
+  tags:
+    - include_jenkins_agent_role
+
+- name: copy jenkins health check script for consul
+  copy:
+    src: ./files/jenkins_agent_health_check.sh
+    dest: /home/ubuntu/
+    owner: consul
+    group: consul
+    mode: '0775'
+  tags:
+    - include_jenkins_agent_role
+
 
 - name: copy jenkins service config file to consul.d
   become: yes
