@@ -1,0 +1,31 @@
+---
+- name: opsschool mid-project playbook
+  hosts: service_instance_true
+  gather_facts: yes
+
+  tasks:
+    - name: include common role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: common
+      tags:
+        - include_common_role
+  
+    - name: include jenkins_server role
+      vars:
+        ansible_become: yes
+      include_role: 
+        name: jenkins-server
+      when: inventory_hostname in groups.jenkins_server_true
+      tags: 
+        - include_jenkins_role
+
+    - name: include jenkins_agents role
+      vars:
+        ansible_become: yes
+      include_role: 
+        name: jenkins-agents
+      when: inventory_hostname in groups.jenkins_agent_true
+      tags: 
+        - include_jenkins_agent_role

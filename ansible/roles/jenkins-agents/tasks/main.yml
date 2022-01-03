@@ -1,0 +1,128 @@
+---
+- name: update apt package index and install dependencies
+  apt:
+    name: 
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - python3-pip
+    - openjdk-11-jdk
+    - apt-transport-https
+    state: latest
+    update_cache: yes
+  tags:
+    - include_jenkins_agent_role 
+
+- name: upgrade pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+  tags:
+    - include_jenkins_agent_role
+
+- name: add docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  tags:
+    - include_jenkins_agent_role
+
+- name: add docker stable repository to apt
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+  tags:
+    - include_jenkins_agent_role
+
+- name: install docker
+  apt:
+    name:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    state: present
+    update_cache: yes
+  notify:
+  - start docker daemon
+  tags:
+    - include_jenkins_agent_role
+
+- name: adding user to group docker
+  user:
+    name: '{{ item }}'
+    groups: docker
+    append: yes
+  loop: "{{ ubuntu_docker_users }}"
+  tags:
+    - include_jenkins_agent_role
+
+- name: Flush handlers
+  meta: flush_handlers
+  tags:
+    - include_jenkins_agent_role
+
+- name: add Kubernetes apt-key for APT repository
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  tags:
+    - include_jenkins_agent_role
+
+- name: add Kubernetes APT repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+  tags:
+    - include_jenkins_agent_role
+
+- name: install kubectl
+  apt:
+    name: kubectl
+    state: present
+    force: yes
+  tags:
+    - include_jenkins_agent_role
+
+- name: copy over kubeconfig file
+  copy:
+    src: "{{ item }}"
+    dest: /home/ubuntu/kubeconfig
+    owner: ubuntu
+    force: yes
+  with_fileglob:
+    - "../terraform/kubeconfig_mid-project-eks-*"
+  tags:
+    - include_jenkins_agent_role
+
+- name: Download aws-iam-autheticator
+  get_url:
+    url: https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+    dest: /usr/local/bin/aws-iam-authenticator
+    mode: '0755'
+  tags:
+    - include_jenkins_agent_role
+
+- name: copy jenkins health check script for consul
+  copy:
+    src: ./files/jenkins_agent_health_check.sh
+    dest: /home/ubuntu/
+    owner: consul
+    group: consul
+    mode: '0775'
+  tags:
+    - include_jenkins_agent_role
+
+
+- name: copy jenkins service config file to consul.d
+  become: yes
+  become_user: consul
+  copy:
+    src: ./files/jenkins-agent-service.json
+    dest: /etc/consul.d/jenkins-agent-service.json
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
+  tags:
+  - include_jenkins_agent_role

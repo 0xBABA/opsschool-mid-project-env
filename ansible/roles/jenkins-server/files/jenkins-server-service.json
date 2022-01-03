@@ -1,0 +1,18 @@
+{
+  "service": {
+    "name": "jenkins-server",
+    "tags": [
+      "cicd",
+      "jenkins"
+    ],
+    "port": 8080,
+    "checks": [
+      {
+        "id": "jenkins",
+        "name": "jenkins responds at port 50000",
+        "http": "http://localhost:50000",
+        "interval": "20s"
+      }
+    ]
+  }
+}

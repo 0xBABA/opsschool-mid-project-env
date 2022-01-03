@@ -1,0 +1,157 @@
+---
+- name: update apt package index and install dependencies
+  apt:
+    name: 
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - python3-pip
+    - unzip
+    state: latest
+    update_cache: yes
+  tags:
+    - include_jenkins_role
+
+- name: add docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  tags:
+    - include_jenkins_role
+
+# TODO: install virtualenv==20.11.2?
+- name: install python packages
+  pip:
+    name: 
+      - docker==5.0.3
+      - boto3==1.20.26
+  tags:
+    - include_jenkins_role
+
+- name: add docker stable repository to apt
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+  tags:
+    - include_jenkins_role
+
+- name: install docker 
+  apt:
+    name: 
+    - docker-ce
+    - docker-ce-cli 
+    - containerd.io
+    state: present
+    update_cache: yes
+  notify:
+  - start docker daemon
+  tags:
+    - include_jenkins_role
+
+- name: adding user to group docker
+  user:
+    name: '{{ item }}'
+    groups: docker
+    append: yes
+  loop: "{{ ubuntu_docker_users }}"
+  tags:
+    - include_jenkins_role
+
+- name: Flush handlers
+  meta: flush_handlers
+  tags:
+    - include_jenkins_role
+
+- name: Download aws cli
+  get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /home/ubuntu/awscliv2.zip
+  tags:
+    - include_jenkins_role
+
+- name: unzip awscliv2.zip
+  unarchive:
+    src: /home/ubuntu/awscliv2.zip
+    dest: /home/ubuntu/
+    remote_src: yes
+    owner: ubuntu
+  tags:
+    - include_jenkins_role
+
+- name: install aws cli
+  command: 
+    cmd: /home/ubuntu/aws/install
+    creates: /home/ubuntu/aws
+  tags:
+    - include_jenkins_role
+
+- name: create jenkins home dir
+  file: 
+    path: /home/ubuntu/jenkins_home
+    state: directory
+    group: ubuntu
+    owner: ubuntu
+  tags:
+    - include_jenkins_role
+
+- name: download jenkins configuration from s3
+  amazon.aws.aws_s3:
+    bucket: yoad-opsschool-mid-project-jenkins
+    object: jenkins_configuration.tar
+    dest: /home/ubuntu/jenkins_configuration.tar
+    mode: get
+  tags:
+    - include_jenkins_role
+
+- name: untar jenkins configuration
+  unarchive:
+    src: /home/ubuntu/jenkins_configuration.tar
+    dest: /home/ubuntu/
+    remote_src: yes
+    owner: ubuntu
+  tags:
+    - include_jenkins_role  
+
+# copy nodes configuration from templates to jenkins_home/nodes/jenkins-agent-{01,02}/config.xml
+# - name: configure jenkins_agents
+#   template:
+#     src: "{{ item.src }}"
+#     dest: /home/ubuntu/jenkins_home/nodes/"{{ item.dest }}"
+#   loop:
+#     - { src: agent-01-config.xml.j2, dest: jenkins-agent-01/agent-01-config.xml}
+#     - { src: agent-02-config.xml.j2, dest: jenkins-agent-02/agent-02-config.xml}
+#   tags:
+#     - include_jenkins_role
+
+- name: docker run jenkins
+  docker_container:
+    name: jenkins
+    image: jenkins/jenkins
+    detach: yes
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    restart_policy: always
+    container_default_behavior: compatibility
+    env: 
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    volumes:
+      - /home/ubuntu/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    state: started
+  tags:
+    - include_jenkins_role
+
+- name: copy jenkins service config file to consul.d
+  become: yes
+  become_user: consul
+  copy:
+    src: ./files/jenkins-server-service.json
+    dest: /etc/consul.d/jenkins-server-service.json
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
+  tags:
+  - include_jenkins_role

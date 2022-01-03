@@ -1,0 +1,20 @@
+{
+  "service": {
+    "name": "jenkins-agent",
+    "tags": [
+      "cicd",
+      "jenkins"
+    ],
+    "checks": [
+      {
+        "id": "jenkins-agent",
+        "name": "jenkins agent remoting.jar is running",
+        "args": [
+          "/bin/bash",
+          "/home/ubuntu/jenkins_agent_health_check.sh"
+        ],
+        "interval": "10s"
+      }
+    ]
+  }
+}
