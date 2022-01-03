@@ -22,8 +22,9 @@ resource "aws_lb_target_group" "consul_alb" {
 
   health_check {
     enabled = true
-    path    = "/ui"
+    path    = "/ui/opsschool/services"
     port    = 8500
+    matcher = "200,301"
   }
 
   tags = {

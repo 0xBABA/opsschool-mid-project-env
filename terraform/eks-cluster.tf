@@ -23,14 +23,14 @@ module "eks" {
       name                          = "worker-group-1"
       instance_type                 = "t3.medium"
       additional_userdata           = "echo opsschool mid project"
-      asg_desired_capacity          = 2
+      asg_desired_capacity          = 1
       additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
     },
     {
       name                          = "worker-group-2"
       instance_type                 = "t3.large"
       additional_userdata           = "echo opsschool mid project"
-      asg_desired_capacity          = 2
+      asg_desired_capacity          = 1
       additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
     }
   ]
