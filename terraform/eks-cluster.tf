@@ -17,7 +17,6 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
-  manage_aws_auth = true
   worker_groups = [
     {
       name                          = "worker-group-1"
@@ -35,6 +34,7 @@ module "eks" {
     }
   ]
 
+  manage_aws_auth = true
   map_users = [
     {
       groups   = ["system:masters"]
@@ -50,7 +50,7 @@ module "eks" {
 
   map_roles = [
     {
-      rolearn  = aws_iam_role.consul-join.arn
+      rolearn  = aws_iam_role.jenkins_agents.arn
       username = "system:node:{{EC2PrivateDNSName}}"
       groups : ["system:masters"]
     }

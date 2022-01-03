@@ -36,3 +36,7 @@ output "cluster_name" {
 output "oidc_provider_arn" {
   value = module.eks.oidc_provider_arn
 }
+
+output "eks_cluster_arn" {
+  value = module.eks.cluster_arn
+}
