@@ -5,13 +5,15 @@ variable "aws_region" {
 }
 
 variable "global_name_prefix" {
-  default     = "mid-project"
+  default     = "project"
   type        = string
   description = "1st prefix in the resources' Name tags"
 }
 
 variable "pem_key_name" {
-  default     = "opsschool_mid_project.pem"
+  default     = "opsschool_project.pem"
   type        = string
   description = "name of ssh key to attach to instances"
 }
+
+

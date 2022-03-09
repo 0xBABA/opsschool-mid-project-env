@@ -43,7 +43,7 @@ provider "aws" {
   default_tags {
     tags = {
       owner   = "yoad"
-      purpose = "mid-project"
+      purpose = "project"
       context = "opsschool"
     }
   }

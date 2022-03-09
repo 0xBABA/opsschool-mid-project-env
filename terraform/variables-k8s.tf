@@ -5,7 +5,7 @@ variable "kubernetes_version" {
 
 locals {
   k8s_service_account_namespace = "default"
-  k8s_service_account_name      = "opsschool-mid-proj"
+  k8s_service_account_name      = "opsschool-proj"
   cluster_name                  = "${var.global_name_prefix}-eks-${random_string.suffix.result}"
 }
 
