@@ -4,3 +4,6 @@ opsschool-kandula-app.2021-12-30.private-key.pem
 kandula-app-jenkins-github-integration-converted.pem
 terraform/kubeconfig_*
 .vscode/settings.json
+terraform/db_secret.tfvars
+terraform/*.tfplan
+terraform/opsschool_project.pem
