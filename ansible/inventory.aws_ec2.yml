@@ -4,7 +4,7 @@ regions:
   - us-east-1
 filters:
   tag:purpose:
-    - mid-project
+    - project
   instance-state-name: running
 hostnames:
   - network-interface.association.public-ip
