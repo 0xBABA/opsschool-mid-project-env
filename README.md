@@ -30,7 +30,7 @@ ssh-add ../terraform/opsschool_project.pem
 ```
 4. Run the ansible playbook
 ```
-ansible-playbook mid-proj.playbook.yml
+ansible-playbook proj.playbook.yml
 ```
 
 ### Further configuration of Jenkins 
