@@ -25,7 +25,8 @@ cd ../ansible
 pip3 install docker
 ansible-galaxy collection install amazon.aws
 ansible-galaxy collection install community.docker
-ssh-add ../terraform/opsschool_mid_project.pem
+ansible-galaxy collection install community.postgresql
+ssh-add ../terraform/opsschool_project.pem
 ```
 4. Run the ansible playbook
 ```
@@ -58,3 +59,7 @@ This is a bug in the provider, which should be reported in the provider's own is
 ```
 
 Thanks!
+
+
+### README TODOs:
+[ ] mention the db_secret.tfvars addition and usage 

@@ -2,8 +2,10 @@ variable "db_credentials" {
   sensitive   = true
   description = "crednetials for rds db connection"
   type = object({
-    user     = string
-    password = string
+    admin_user        = string
+    admin_password    = string
+    app_user          = string
+    app_user_password = string
   })
 }
 
@@ -44,4 +46,16 @@ variable "db_port" {
   description = "port for db connections"
   type        = number
   default     = 5432
+}
+
+variable "ansible_psql_role_vars_filepath" {
+  description = "file path for vars file used in ansible psql role"
+  type        = string
+  default     = "../ansible/roles/psql/vars/main.yml"
+}
+
+variable "db_setup_script_filepath" {
+  description = "file path for sql file used for iitial db setup"
+  type        = string
+  default     = "../ansible/roles/psql/files/setup_db.sql"
 }

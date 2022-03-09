@@ -1,0 +1,45 @@
+---
+- name: update apt package index and install dependencies
+  apt:
+    name: 
+    - python3-pip
+    state: latest
+    update_cache: yes
+  tags:
+    - include_psql_role
+
+- name: upgrade pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+  tags:
+    - include_psql_role
+
+- name: install psycopg2 package
+  pip:
+    name: 
+      - psycopg2-binary==2.9.3
+  tags:
+    - include_psql_role
+
+- name: copy setup sql script 
+  copy:
+    src: ./files/setup_db.sql
+    dest: /home/ubuntu/
+    owner: ubuntu
+    mode: '0775'
+  tags:
+    - include_psql_role
+
+
+- name: run sql script on rds db
+  community.postgresql.postgresql_script:
+    db: "{{ db_name }}"
+    login_host: "{{ db_host}}"
+    login_user: "{{ db_admin_user }}"
+    login_password: "{{ db_admin_password }}"
+    path: /home/ubuntu/setup_db.sql
+    encoding: UTF-8
+  tags:
+    - include_psql_role
+    - run_this
