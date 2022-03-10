@@ -7,13 +7,14 @@
   gather_facts: yes
 
   tasks:
-    - name: include common role
+    - name: include consul role
       vars:
         ansible_become: yes
       include_role:
-        name: common
+        name: consul
+      when: inventory_hostname in groups.service_instance_true
       tags:
-        - include_common_role
+        - include_consul_role
 
     - name: include psql role
       vars:
@@ -41,3 +42,21 @@
       when: inventory_hostname in groups.jenkins_agent_true
       tags: 
         - include_jenkins_agent_role
+
+    - name: include prometheus role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: prometheus
+      when: inventory_hostname in groups.monitoring_true
+      tags:
+        - include_prometheus_role
+
+    - name: include node_exporter role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: install_node_exporter
+      when: inventory_hostname in groups.service_instance_true
+      tags:
+        - include_node_exporter_role
