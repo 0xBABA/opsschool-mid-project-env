@@ -1,7 +1,4 @@
-# get my external ip - should be redundant for project
-data "http" "myip" {
-  url = "http://ifconfig.me"
-}
+
 
 resource "aws_db_subnet_group" "kandula-db" {
   name       = format("%s-db-sn-grp", var.global_name_prefix)
