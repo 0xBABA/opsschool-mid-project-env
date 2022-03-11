@@ -123,3 +123,13 @@ resource "aws_security_group_rule" "consul_alb" {
   source_security_group_id = aws_security_group.consul_alb_sg.id
   security_group_id        = aws_security_group.consul-sg.id
 }
+
+resource "aws_security_group_rule" "consul_node_exporter" {
+  type                     = "ingress"
+  from_port                = 9100
+  to_port                  = 9100
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.monitoring_sg.id
+  description              = "Allow prometheus to parse node_exporter metrics"
+  security_group_id        = aws_security_group.consul-sg.id
+}
