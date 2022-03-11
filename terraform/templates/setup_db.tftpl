@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS schedule.instance_shutdown (
 
 CREATE ROLE ${app_user} 
 LOGIN
-PASSWORD ${app_user_password};
+PASSWORD '${app_user_password}';
 
 GRANT  INSERT, SELECT, UPDATE, DELETE ON schedule.instance_shutdown TO ${app_user};
