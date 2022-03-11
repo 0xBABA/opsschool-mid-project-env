@@ -90,6 +90,7 @@
     owner: prometheus
   tags:
     - include_prometheus_role
+    - configure_prometheus
 
 - name: start promtheus service
   systemd:
@@ -99,6 +100,7 @@
     state: restarted
   tags:
     - include_prometheus_role
+    - configure_prometheus
 
 - name: add grafana's official GPG key
   apt_key:
