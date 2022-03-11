@@ -9,6 +9,8 @@ resource "aws_instance" "jenkins_server" {
   vpc_security_group_ids = [aws_security_group.jenkins-server-sg.id]
 
   metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
     instance_metadata_tags = "enabled"
   }
 
@@ -31,6 +33,8 @@ resource "aws_instance" "jenkins_agent" {
   vpc_security_group_ids = [aws_security_group.jenkins-server-sg.id]
 
   metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
     instance_metadata_tags = "enabled"
   }
 

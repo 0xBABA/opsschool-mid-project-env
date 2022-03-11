@@ -83,6 +83,8 @@ resource "aws_instance" "prometheus" {
   iam_instance_profile        = aws_iam_instance_profile.consul-join.name
 
   metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
     instance_metadata_tags = "enabled"
   }
 

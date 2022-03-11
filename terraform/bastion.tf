@@ -8,6 +8,8 @@ resource "aws_instance" "bastion_host" {
   vpc_security_group_ids = [aws_security_group.common-sg.id]
 
   metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
     instance_metadata_tags = "enabled"
   }
 

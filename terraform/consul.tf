@@ -10,6 +10,8 @@ resource "aws_instance" "consul_server" {
   vpc_security_group_ids = [aws_security_group.consul-sg.id]
 
   metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
     instance_metadata_tags = "enabled"
   }
 
