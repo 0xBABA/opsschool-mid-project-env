@@ -62,6 +62,15 @@ resource "aws_security_group_rule" "prometheus_ui" {
   security_group_id = aws_security_group.monitoring_sg.id
 }
 
+resource "aws_security_group_rule" "prometheus_consul" {
+  type                     = "ingress"
+  from_port                = 8300
+  to_port                  = 8301
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.consul-sg.id
+  description              = "Allow ping"
+  security_group_id        = aws_security_group.monitoring_sg.id
+}
 
 resource "aws_instance" "prometheus" {
   count                       = 1
@@ -71,6 +80,7 @@ resource "aws_instance" "prometheus" {
   vpc_security_group_ids      = [aws_security_group.monitoring_sg.id]
   key_name                    = aws_key_pair.project_key.key_name
   associate_public_ip_address = false
+  iam_instance_profile        = aws_iam_instance_profile.consul-join.name
 
   tags = {
     Name                = format("%s-prometheus-server-${count.index}", var.global_name_prefix)
