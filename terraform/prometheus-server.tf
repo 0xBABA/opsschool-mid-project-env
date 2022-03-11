@@ -82,6 +82,10 @@ resource "aws_instance" "prometheus" {
   associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.consul-join.name
 
+  metadata_options {
+    instance_metadata_tags = "enabled"
+  }
+
   tags = {
     Name                = format("%s-prometheus-server-${count.index}", var.global_name_prefix)
     is_prometheus       = true

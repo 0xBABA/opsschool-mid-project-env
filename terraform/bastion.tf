@@ -7,6 +7,10 @@ resource "aws_instance" "bastion_host" {
 
   vpc_security_group_ids = [aws_security_group.common-sg.id]
 
+  metadata_options {
+    instance_metadata_tags = "enabled"
+  }
+
   tags = {
     Name         = format("%s-bastion-host", var.global_name_prefix)
     bastion_host = "true"

@@ -8,6 +8,10 @@ resource "aws_instance" "jenkins_server" {
 
   vpc_security_group_ids = [aws_security_group.jenkins-server-sg.id]
 
+  metadata_options {
+    instance_metadata_tags = "enabled"
+  }
+
   tags = {
     Name                = format("%s-jenkins-server", var.global_name_prefix)
     jenkins_server      = "true"
@@ -25,6 +29,10 @@ resource "aws_instance" "jenkins_agent" {
   associate_public_ip_address = false
 
   vpc_security_group_ids = [aws_security_group.jenkins-server-sg.id]
+
+  metadata_options {
+    instance_metadata_tags = "enabled"
+  }
 
   tags = {
     Name                = format("%s-jenkins-agent-${count.index}", var.global_name_prefix)
