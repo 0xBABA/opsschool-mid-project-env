@@ -97,6 +97,40 @@
     name: prometheus
     enabled: yes
     state: restarted
+  tags:
+    - include_prometheus_role
+
+- name: add grafana's official GPG key
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+  tags:
+    - install_grafana
+
+- name: add grafana stable repository to apt
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+  tags:
+    - install_grafana
+
+- name: update apt package index and install dependencies
+  apt:
+    name: 
+    - grafana
+    state: latest
+    update_cache: yes
+  tags:
+    - install_grafana 
+
+- name: start grafana service
+  systemd:
+    daemon_reload: yes
+    name: grafana-server
+    enabled: yes
+    state: restarted
+  tags:
+    - install_grafana
 
 - name: get prometheus service status
   systemd:
@@ -107,5 +141,28 @@
 
 - debug:
     var: prometheus_service_status.status.ActiveState
+  tags:
+    - include_prometheus_role
+
+- name: get grafana service status
+  systemd:
+    name: grafana-server
+  register: grafana_service_status
+  tags:
+    - install_grafana
+
+- debug:
+    var: grafana_service_status.status.ActiveState
+  tags:
+    - install_grafana
+
+- name: copy prometheus consul service file
+  copy:
+    src: ./files/prometheus-consul-service.json
+    dest: /etc/consul.d/
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
   tags:
     - include_prometheus_role

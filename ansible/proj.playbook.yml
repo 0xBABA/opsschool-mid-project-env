@@ -51,6 +51,7 @@
       when: inventory_hostname in groups.monitoring_true
       tags:
         - include_prometheus_role
+        - install_grafana
 
     - name: include node_exporter role
       vars:

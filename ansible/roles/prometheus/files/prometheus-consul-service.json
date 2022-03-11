@@ -1,0 +1,17 @@
+{
+  "service": {
+    "name": "prometheus",
+    "tags": [
+      "monitoring"
+    ],
+    "checks": [
+      {
+        "id": "prometheus",
+        "name": "prometheus is running and healthy",
+        "http": "http://localhost:9090/-/healthy",
+        "method": "GET",
+        "interval": "10s"
+      }
+    ]
+  }
+}
