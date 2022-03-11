@@ -92,12 +92,19 @@
   tags:
     - include_consul_role
 
+- name: update node_name from ec2 Name tag
+  become: yes
+  become_user: consul
+  shell: sed -i "s|REPLACE_ME|\"$(curl http://169.254.169.254/latest/meta-data/tags/instance/Name)\"|" {{ consul_configuration_file_path }}
+  tags:
+    - include_consul_role
+
 - name: enable and start consul.d service
   systemd:
     daemon_reload: yes
     name: consul
     enabled: yes
-    state: started
+    state: restarted
   tags:
    - include_consul_role
 
