@@ -82,6 +82,7 @@
     owner: consul
   tags:
    - include_consul_role
+   - configure_consul
 
 - name: configure consul
   become: yes
@@ -91,6 +92,7 @@
     dest: "{{ consul_configuration_file_path }}"
   tags:
     - include_consul_role
+    - configure_consul
 
 - name: update node_name from ec2 Name tag
   become: yes
@@ -98,6 +100,7 @@
   shell: sed -i "s|REPLACE_ME|\"$(curl http://169.254.169.254/latest/meta-data/tags/instance/Name)\"|" {{ consul_configuration_file_path }}
   tags:
     - include_consul_role
+    - configure_consul
 
 - name: enable and start consul.d service
   systemd:
@@ -107,4 +110,5 @@
     state: restarted
   tags:
    - include_consul_role
+   - configure_consul
 
