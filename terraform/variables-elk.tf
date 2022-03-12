@@ -1,7 +1,7 @@
 variable "elk_instance_type" {
   type        = string
   description = "instance type for elk hosting"
-  default     = "t2.micro"
+  default     = "t3.medium"
 }
 
 variable "num_elk_servers" {

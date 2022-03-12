@@ -133,3 +133,13 @@ resource "aws_security_group_rule" "consul_node_exporter" {
   description              = "Allow prometheus to parse node_exporter metrics"
   security_group_id        = aws_security_group.consul-sg.id
 }
+
+resource "aws_security_group_rule" "consul_elk_server" {
+  type                     = "ingress"
+  from_port                = 8300
+  to_port                  = 8301
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.elk-sg.id
+  description              = "Allow serf ports for elk consul registartion"
+  security_group_id        = aws_security_group.consul-sg.id
+}
