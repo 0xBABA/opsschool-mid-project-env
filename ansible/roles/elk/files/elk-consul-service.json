@@ -1,0 +1,24 @@
+{
+  "service": {
+    "name": "elk",
+    "tags": [
+      "logging"
+    ],
+    "checks": [
+      {
+        "id": "elasticsearch",
+        "name": "elasticsearch is running and healthy",
+        "http": "http://localhost:9200/_cluster/health",
+        "method": "GET",
+        "interval": "10s"
+      },
+      {
+        "id": "kibana",
+        "name": "kibana is running and healthy",
+        "http": "http://localhost:5601/status",
+        "method": "GET",
+        "interval": "10s"
+      }
+    ]
+  }
+}

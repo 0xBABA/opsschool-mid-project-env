@@ -1,2 +1,6 @@
 ---
-# handlers file for roles/elk
+- name: restart consul service
+  become: yes
+  service:
+    name: consul
+    state: restarted

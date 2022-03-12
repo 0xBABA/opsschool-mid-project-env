@@ -63,3 +63,13 @@
       when: inventory_hostname in groups.service_instance_true
       tags:
         - include_node_exporter_role
+
+    - name: include elk role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: elk
+      when: inventory_hostname in groups.elk_server_true
+      tags:
+        - include_elk_role
+        - configure_kibana

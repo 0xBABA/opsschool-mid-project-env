@@ -53,6 +53,7 @@
     dest: /etc/kibana/
   tags:
     - include_elk_role
+    - configure_kibana
 
 - name: start kibana service
   systemd:
@@ -62,6 +63,7 @@
     state: restarted
   tags:
     - include_elk_role
+    - configure_kibana
 
 - name: get kibana service status
   systemd:
@@ -69,8 +71,21 @@
   register: kibana_service_status
   tags:
     - include_elk_role
+    - configure_kibana
 
 - debug:
     var: kibana_service_status.status.ActiveState
+  tags:
+    - include_elk_role
+    - configure_kibana
+
+- name: copy elk consul service file
+  copy:
+    src: ./files/elk-consul-service.json
+    dest: /etc/consul.d/
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
   tags:
     - include_elk_role
