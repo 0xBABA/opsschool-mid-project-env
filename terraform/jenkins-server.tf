@@ -115,7 +115,7 @@ resource "aws_security_group_rule" "jenkins_consul" {
   to_port                  = 8301
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.consul-sg.id
-  description              = "Allow ping"
+  description              = "Allow serf ports for consul"
   security_group_id        = aws_security_group.jenkins-server-sg.id
 }
 

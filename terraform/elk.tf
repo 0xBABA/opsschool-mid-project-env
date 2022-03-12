@@ -102,7 +102,7 @@ resource "aws_security_group_rule" "elk_ping" {
   protocol          = "icmp"
   cidr_blocks       = concat(var.private_subnet_cidrs, var.public_subnet_cidrs)
   description       = "Allow ping"
-  security_group_id = aws_security_group.elk_sg.id
+  security_group_id = aws_security_group.elk-sg.id
 }
 
 resource "aws_security_group_rule" "elk_out" {
@@ -112,7 +112,7 @@ resource "aws_security_group_rule" "elk_out" {
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
   description       = "Allow all outside security group"
-  security_group_id = aws_security_group.elk_sg.id
+  security_group_id = aws_security_group.elk-sg.id
 }
 
 resource "aws_security_group_rule" "ingress_with_self" {
@@ -122,7 +122,7 @@ resource "aws_security_group_rule" "ingress_with_self" {
   protocol          = "all"
   self              = true
   description       = "Allow ingress with self security group"
-  security_group_id = aws_security_group.elk_sg.id
+  security_group_id = aws_security_group.elk-sg.id
 }
 
 resource "aws_security_group_rule" "elk_consul" {
@@ -132,5 +132,5 @@ resource "aws_security_group_rule" "elk_consul" {
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.consul-sg.id
   description              = "Allow consul"
-  security_group_id        = aws_security_group.elk_sg.id
+  security_group_id        = aws_security_group.elk-sg.id
 }
