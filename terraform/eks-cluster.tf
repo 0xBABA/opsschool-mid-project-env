@@ -10,7 +10,7 @@ module "eks" {
   tags = {
     environment = "development"
     owner       = "yoad"
-    purpose     = "mid-project"
+    purpose     = "project"
     context     = "opsschool"
     k8s         = "true"
   }

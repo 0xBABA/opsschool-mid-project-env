@@ -1,12 +1,18 @@
 resource "aws_instance" "jenkins_server" {
   ami                         = data.aws_ami.ubuntu-18.id
   instance_type               = "t3.micro"
-  key_name                    = aws_key_pair.mid_project_key.key_name
+  key_name                    = aws_key_pair.project_key.key_name
   iam_instance_profile        = aws_iam_instance_profile.jenkins.name
   subnet_id                   = module.vpc.private_subnet_id[0]
   associate_public_ip_address = false
 
   vpc_security_group_ids = [aws_security_group.jenkins-server-sg.id]
+
+  metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
+    instance_metadata_tags = "enabled"
+  }
 
   tags = {
     Name                = format("%s-jenkins-server", var.global_name_prefix)
@@ -19,12 +25,18 @@ resource "aws_instance" "jenkins_agent" {
   count                       = var.num_jenkins_agents
   ami                         = data.aws_ami.ubuntu-18.id
   instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.mid_project_key.key_name
+  key_name                    = aws_key_pair.project_key.key_name
   iam_instance_profile        = aws_iam_instance_profile.jenkins_agents.name
   subnet_id                   = element(module.vpc.private_subnet_id, count.index)
   associate_public_ip_address = false
 
   vpc_security_group_ids = [aws_security_group.jenkins-server-sg.id]
+
+  metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
+    instance_metadata_tags = "enabled"
+  }
 
   tags = {
     Name                = format("%s-jenkins-agent-${count.index}", var.global_name_prefix)
@@ -103,7 +115,17 @@ resource "aws_security_group_rule" "jenkins_consul" {
   to_port                  = 8301
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.consul-sg.id
-  description              = "Allow ping"
+  description              = "Allow serf ports for consul"
+  security_group_id        = aws_security_group.jenkins-server-sg.id
+}
+
+resource "aws_security_group_rule" "jenkins_node_exporter" {
+  type                     = "ingress"
+  from_port                = 9100
+  to_port                  = 9100
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.monitoring_sg.id
+  description              = "Allow prometheus to parse node_exporter metrics"
   security_group_id        = aws_security_group.jenkins-server-sg.id
 }
 

@@ -5,3 +5,7 @@
 
 - once service account has iam role for Ec2FullAccess we can test it via:
 `kubectl -n opsschool-mid-project-k8s-ns run --command=true --serviceaccount='k8s-sa' --rm -i --tty awscli --image=amazon/aws-cli --restart=Never aws ec2 describe-instances`
+
+- ssh to prometheus server and run:
+`curl http://10.0.11.109:8500/v1/agent/metrics?format=prometheus | less`
+=> see consul metrics

@@ -4,7 +4,7 @@ regions:
   - us-east-1
 filters:
   tag:purpose:
-    - mid-project
+    - project
   instance-state-name: running
 hostnames:
   - network-interface.association.public-ip
@@ -22,3 +22,7 @@ keyed_groups:
     key: tags['jenkins_agent']
   - prefix: k8s_worker
     key: tags['k8s']
+  - prefix: monitoring
+    key: tags['is_prometheus']
+  - prefix: elk_server
+    key: tags['elk_server']

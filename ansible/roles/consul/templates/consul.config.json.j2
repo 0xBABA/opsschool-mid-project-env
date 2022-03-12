@@ -11,9 +11,13 @@
   "server": true,
   "bootstrap_expect": 3,
   "ui": true,
-  "client_addr": "0.0.0.0"
+  "client_addr": "0.0.0.0",
+  "telemetry": {
+    "prometheus_retention_time": "10m"
+  },
   {% else -%}
   "enable_script_checks": true,
-  "server": false
+  "server": false,
   {% endif -%}
+  "node_name": REPLACE_ME
 }

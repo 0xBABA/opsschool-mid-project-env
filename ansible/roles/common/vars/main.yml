@@ -1,3 +1,0 @@
----
-dnsmasq_configuration_file: /etc/dnsmasq.d/10-consul
-consul_configuration_file_path: /etc/consul.d/config.json

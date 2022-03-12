@@ -2,12 +2,18 @@ resource "aws_instance" "consul_server" {
   count                       = var.num_consul_servers
   ami                         = data.aws_ami.ubuntu-18.id
   instance_type               = var.consul_instance_type
-  key_name                    = aws_key_pair.mid_project_key.key_name
+  key_name                    = aws_key_pair.project_key.key_name
   iam_instance_profile        = aws_iam_instance_profile.consul-join.name
   subnet_id                   = element(module.vpc.private_subnet_id, count.index)
   associate_public_ip_address = false
 
   vpc_security_group_ids = [aws_security_group.consul-sg.id]
+
+  metadata_options {
+    http_endpoint          = "enabled"
+    http_tokens            = "optional"
+    instance_metadata_tags = "enabled"
+  }
 
   tags = {
     Name                = format("%s-consul-server-${count.index}", var.global_name_prefix)
@@ -95,7 +101,17 @@ resource "aws_security_group_rule" "consul_jenkins_server" {
   to_port                  = 8301
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.jenkins-server-sg.id
-  description              = "Allow ping"
+  description              = "Allow serf ports for jenkins consul registartion"
+  security_group_id        = aws_security_group.consul-sg.id
+}
+
+resource "aws_security_group_rule" "consul_monitoring_server" {
+  type                     = "ingress"
+  from_port                = 8300
+  to_port                  = 8301
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.monitoring_sg.id
+  description              = "Allow serf ports for prometheus consul registartion"
   security_group_id        = aws_security_group.consul-sg.id
 }
 
@@ -105,5 +121,25 @@ resource "aws_security_group_rule" "consul_alb" {
   to_port                  = 80
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.consul_alb_sg.id
+  security_group_id        = aws_security_group.consul-sg.id
+}
+
+resource "aws_security_group_rule" "consul_node_exporter" {
+  type                     = "ingress"
+  from_port                = 9100
+  to_port                  = 9100
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.monitoring_sg.id
+  description              = "Allow prometheus to parse node_exporter metrics"
+  security_group_id        = aws_security_group.consul-sg.id
+}
+
+resource "aws_security_group_rule" "consul_elk_server" {
+  type                     = "ingress"
+  from_port                = 8300
+  to_port                  = 8301
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.elk-sg.id
+  description              = "Allow serf ports for elk consul registartion"
   security_group_id        = aws_security_group.consul-sg.id
 }

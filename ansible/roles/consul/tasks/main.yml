@@ -4,16 +4,14 @@
     url: https://apt.releases.hashicorp.com/gpg
     state: present
   tags: 
-    - consul_install
-    - add_hashicorp_repo
+    - include_consul_role
 
 - name: add Hashicorp main repository to apt
   apt_repository:
     repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ansible_distribution_release}} main"
     state: present
   tags: 
-    - consul_install
-    - add_hashicorp_repo
+    - include_consul_role
 
 - name: install dependencies on target ec2 instances
   apt:
@@ -23,28 +21,28 @@
     state: present
     update_cache: yes
   tags:
-   - consul_install
-   - dnsmasq_setup
+   - include_consul_role
 
 - name: configure dnsmasq
-  template:
-    src: dnsmasq.conf.j2
+  copy:
+    src: ./files/dnsmasq.conf
     dest: "{{ dnsmasq_configuration_file }}"
     mode: "0644"
   notify:
     - test dnsmasq configuration
     - restart dnsmasq
   tags:
-    - dnsmasq_setup
+    - include_consul_role
 
 - name: configure resolved.conf
-  template: 
-    src: resolved.conf.j2
-    dest: /etc/systemd/resolved.conf
+  copy: 
+    src: resolved.conf
+    dest: "{{ resolved_conf_file_path }}"
+    mode: "0644"
   notify: 
     - restart systemd-resolved
   tags:
-    - dnsmasq_setup
+    - include_consul_role
 
 - name: flush handlers
   meta: flush_handlers
@@ -54,14 +52,14 @@
     name: consul
     state: present
   tags:
-   - consul_setup
+   - include_consul_role
 
 - name: create consul user
   user:
     name: consul
     group: consul
   tags: 
-    - consul_setup
+    - include_consul_role
 
 - name: setup consul directories
   file:
@@ -74,16 +72,17 @@
     - /etc/consul.d
     - /run/consul
   tags: 
-    - consul_setup
+    - include_consul_role
 
 - name: configure consul service
   copy:
     src: ./files/consul.service
-    dest: /etc/systemd/system/consul.service
+    dest: "{{ consul_service_conf_file_path }}"
     group: consul
     owner: consul
   tags:
-   - consul_setup
+   - include_consul_role
+   - configure_consul
 
 - name: configure consul
   become: yes
@@ -92,15 +91,24 @@
     src: consul.config.json.j2
     dest: "{{ consul_configuration_file_path }}"
   tags:
-    - consul_setup
-    - consul_config
+    - include_consul_role
+    - configure_consul
+
+- name: update node_name from ec2 Name tag
+  become: yes
+  become_user: consul
+  shell: sed -i "s|REPLACE_ME|\"$(curl http://169.254.169.254/latest/meta-data/tags/instance/Name)\"|" {{ consul_configuration_file_path }}
+  tags:
+    - include_consul_role
+    - configure_consul
 
 - name: enable and start consul.d service
   systemd:
     daemon_reload: yes
     name: consul
     enabled: yes
-    state: started
+    state: restarted
   tags:
-   - consul_setup
+   - include_consul_role
+   - configure_consul
 

@@ -91,7 +91,7 @@
     owner: ubuntu
     force: yes
   with_fileglob:
-    - "../terraform/kubeconfig_mid-project-eks-*"
+    - "../terraform/kubeconfig_project-eks-*"
   tags:
     - include_jenkins_agent_role
 

@@ -14,3 +14,8 @@ data "aws_ami" "ubuntu-18" {
     values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
   }
 }
+
+# get my external ip 
+data "http" "myip" {
+  url = "http://ifconfig.me"
+}

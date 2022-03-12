@@ -3,3 +3,9 @@
   service:
     name: docker
     state: restarted
+
+- name: restart consul service
+  become: yes
+  service:
+    name: consul
+    state: restarted
