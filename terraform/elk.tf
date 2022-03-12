@@ -65,6 +65,7 @@ resource "aws_security_group_rule" "kibana-tcp" {
   security_group_id = aws_security_group.elk-sg.id
 }
 
+#TODO: might not be required if using only filebeat
 resource "aws_security_group_rule" "logstash-tcp" {
   type              = "ingress"
   from_port         = 5044

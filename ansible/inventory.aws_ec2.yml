@@ -24,3 +24,5 @@ keyed_groups:
     key: tags['k8s']
   - prefix: monitoring
     key: tags['is_prometheus']
+  - prefix: elk
+    key: tags['elk_server']
