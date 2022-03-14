@@ -54,6 +54,7 @@
         - include_prometheus_role
         - install_grafana
         - configure_prometheus
+        - configure_grafana
 
     - name: include node_exporter role
       vars:

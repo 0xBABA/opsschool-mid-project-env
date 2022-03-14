@@ -125,6 +125,30 @@
   tags:
     - install_grafana 
 
+- name: restore grafana from backup
+  copy:
+    src: ./files/grafana.db
+    dest: /var/lib/grafana/
+    owner: grafana
+    group: grafana
+    mode: '0640'
+  tags: 
+    - install_grafana
+    - configure_grafana
+
+# - name: copy dashboard files for grafana
+#   copy:
+#     src: "{{ item }}"
+#     dest: /etc/grafana/provisioning/dashboards/
+#     owner: grafana
+#     group: grafana
+#     mode: '0644'
+#   loop:
+#     - ./files/node-exporter-full_rev26.json
+#   tags: 
+#     - install_grafana
+#     - configure_grafana
+
 - name: start grafana service
   systemd:
     daemon_reload: yes
@@ -133,6 +157,7 @@
     state: restarted
   tags:
     - install_grafana
+    - configure_grafana
 
 - name: get prometheus service status
   systemd:
@@ -152,11 +177,13 @@
   register: grafana_service_status
   tags:
     - install_grafana
+    - configure_grafana
 
 - debug:
     var: grafana_service_status.status.ActiveState
   tags:
     - install_grafana
+    - configure_grafana
 
 - name: copy prometheus consul service file
   copy:
