@@ -1,0 +1,35 @@
+---
+- name: download filebeat deb file
+  get_url:
+    url: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-7.11.0-amd64.deb
+    dest: /tmp/filebeat-oss-7.11.0-amd64.deb
+  tags: 
+    - include_filebeat_role
+
+- name: install filebeat from deb file
+  apt: 
+    deb: /tmp/filebeat-oss-7.11.0-amd64.deb
+  tags:
+    - include_filebeat_role
+
+- name: keep filebeat original config yml
+  command: mv /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml.BCK
+
+- name: copy filebeat config yml
+  copy:
+    src: ./files/filebeat.yml
+    dest: /etc/filebeat/
+  tags:
+    - include_filebeat_role
+    - configure_filebeat
+
+- name: start filebeat service
+  systemd:
+    daemon_reload: yes
+    name: filebeat
+    enabled: yes
+    state: restarted
+  tags:
+    - include_filebeat_role
+    - configure_filebeat
+
