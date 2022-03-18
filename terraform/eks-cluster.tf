@@ -41,7 +41,12 @@ module "eks" {
       groups   = ["system:masters"]
       userarn  = aws_instance.jenkins_agent[1].arn
       username = aws_instance.jenkins_agent[1].id
-    }
+    },
+    {
+      groups   = ["system:masters"]
+      userarn  = aws_instance.boostrap_server.arn
+      username = aws_instance.boostrap_server.id
+    },
   ]
 
   map_roles = [
@@ -49,7 +54,12 @@ module "eks" {
       rolearn  = aws_iam_role.jenkins_agents.arn
       username = "system:node:{{EC2PrivateDNSName}}"
       groups : ["system:masters"]
-    }
+    },
+    {
+      rolearn  = aws_iam_role.bootstrap_server.arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups : ["system:masters"]
+    },
   ]
 
 }
@@ -60,4 +70,13 @@ data "aws_eks_cluster" "eks" {
 
 data "aws_eks_cluster_auth" "eks" {
   name = module.eks.cluster_id
+}
+
+resource "local_file" "bootstrap_role_vars" {
+  filename        = var.bootstrap_role_vars_file
+  file_permission = "0644"
+  sensitive_content = templatefile("${path.module}/templates/bootstrap_role_vars.tftpl", {
+    aws_region   = var.aws_region,
+    cluster_name = local.cluster_name
+  })
 }

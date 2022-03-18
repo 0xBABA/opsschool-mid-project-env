@@ -13,3 +13,9 @@ resource "random_string" "suffix" {
   length  = 8
   special = false
 }
+
+variable "bootstrap_role_vars_file" {
+  description = "file path for bootstrap ansible role vars"
+  type        = string
+  default     = "../ansible/roles/bootstrap/vars/main.yml"
+}
