@@ -1,0 +1,27 @@
+---
+- name: Add Helm GPG key
+  apt_key:
+    url: https://baltocdn.com/helm/signing.asc
+    state: present
+  tags:
+    - include_bootstrap_role
+    - install_helm
+
+- name: Setup Helm Stable repo
+  apt_repository:
+    repo: "deb https://baltocdn.com/helm/stable/debian/ all main"
+    update_cache: yes
+    state: present
+  tags:
+    - include_bootstrap_role
+    - install_helm
+
+- name: Install Helm
+  apt:
+    name:
+      - helm
+    update_cache: yes
+    state: present
+  tags:
+    - include_bootstrap_role
+    - install_helm

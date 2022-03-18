@@ -1,0 +1,12 @@
+---
+- include_tasks: install_kubectl.yml
+  name: install kubectl
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- include_tasks: install_helm.yml
+  name: install helm
+  tags:
+    - include_bootstrap_role
+    - install_helm
