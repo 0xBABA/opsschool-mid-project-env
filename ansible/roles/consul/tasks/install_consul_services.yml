@@ -4,14 +4,14 @@
     url: https://apt.releases.hashicorp.com/gpg
     state: present
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: add Hashicorp main repository to apt
   apt_repository:
     repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ansible_distribution_release}} main"
     state: present
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: install dependencies on target ec2 instances
   apt:
@@ -21,7 +21,7 @@
     state: present
     update_cache: yes
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: configure dnsmasq
   copy:
@@ -32,7 +32,7 @@
     - test dnsmasq configuration
     - restart dnsmasq
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: configure resolved.conf
   copy:
@@ -42,7 +42,7 @@
   notify:
     - restart systemd-resolved
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: flush handlers
   meta: flush_handlers
@@ -52,14 +52,14 @@
     name: consul
     state: present
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: create consul user
   user:
     name: consul
     group: consul
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: setup consul directories
   file:
@@ -72,7 +72,7 @@
     - /etc/consul.d
     - /run/consul
   tags:
-    - include_consul_role
+    - install_consul_services
 
 - name: configure consul service
   copy:
@@ -81,7 +81,7 @@
     group: consul
     owner: consul
   tags:
-    - include_consul_role
+    - install_consul_services
     - configure_consul
 
 - name: configure consul
@@ -91,7 +91,7 @@
     src: consul.config.json.j2
     dest: "{{ consul_configuration_file_path }}"
   tags:
-    - include_consul_role
+    - install_consul_services
     - configure_consul
 
 - name: update node_name from ec2 Name tag
@@ -99,7 +99,7 @@
   become_user: consul
   shell: sed -i "s|REPLACE_ME|\"$(curl http://169.254.169.254/latest/meta-data/tags/instance/Name)\"|" {{ consul_configuration_file_path }}
   tags:
-    - include_consul_role
+    - install_consul_services
     - configure_consul
 
 - name: enable and start consul.d service
@@ -109,5 +109,5 @@
     enabled: yes
     state: restarted
   tags:
-    - include_consul_role
+    - install_consul_services
     - configure_consul

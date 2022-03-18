@@ -22,5 +22,5 @@ data:
     consul {
       errors
       cache 30
-      forward . "{{ consul_dns_service_cluster_ip }}"
+      forward . "{{ consul_dns_cluster_ip.stdout_lines[0] }}"
     }
