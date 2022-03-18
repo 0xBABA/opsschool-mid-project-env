@@ -14,7 +14,7 @@ resource "aws_security_group" "consul_sg" {
 resource "aws_security_group_rule" "consul_serf_tcp" {
   type              = "ingress"
   from_port         = 8300
-  to_port           = 8301
+  to_port           = 8302
   protocol          = "tcp"
   self              = true
   description       = "Allow serf ports tcp"
@@ -24,7 +24,27 @@ resource "aws_security_group_rule" "consul_serf_tcp" {
 resource "aws_security_group_rule" "consul_serf_udp" {
   type              = "ingress"
   from_port         = 8300
-  to_port           = 8301
+  to_port           = 8302
+  protocol          = "udp"
+  self              = true
+  description       = "Allow serf ports udp"
+  security_group_id = aws_security_group.consul_sg.id
+}
+
+resource "aws_security_group_rule" "consul_dns_tcp" {
+  type              = "ingress"
+  from_port         = 8600
+  to_port           = 8600
+  protocol          = "tcp"
+  self              = true
+  description       = "Allow serf ports udp"
+  security_group_id = aws_security_group.consul_sg.id
+}
+
+resource "aws_security_group_rule" "consul_dns_udp" {
+  type              = "ingress"
+  from_port         = 8600
+  to_port           = 8600
   protocol          = "udp"
   self              = true
   description       = "Allow serf ports udp"

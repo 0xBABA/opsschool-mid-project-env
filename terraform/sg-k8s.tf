@@ -8,10 +8,10 @@ resource "aws_security_group" "all_worker_mgmt" {
     to_port   = 22
     protocol  = "tcp"
 
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
+    cidr_blocks = concat(var.private_subnet_cidrs, var.public_subnet_cidrs)
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
+

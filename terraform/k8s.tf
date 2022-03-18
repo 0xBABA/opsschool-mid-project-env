@@ -19,3 +19,4 @@ resource "kubernetes_namespace" "kandula" {
   }
   depends_on = [module.eks]
 }
+

@@ -4,14 +4,10 @@ module "eks" {
   cluster_name    = local.cluster_name
   cluster_version = var.kubernetes_version
   subnets         = module.vpc.private_subnet_id
-
-  enable_irsa = true
+  enable_irsa     = true
 
   tags = {
     environment = "development"
-    owner       = "yoad"
-    purpose     = "project"
-    context     = "opsschool"
     k8s         = "true"
   }
 
@@ -21,16 +17,16 @@ module "eks" {
     {
       name                          = "worker-group-1"
       instance_type                 = "t3.medium"
-      additional_userdata           = "echo opsschool mid project"
-      asg_desired_capacity          = 1
-      additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
+      additional_userdata           = "echo opsschool project"
+      asg_desired_capacity          = 2
+      additional_security_group_ids = [aws_security_group.all_worker_mgmt.id, aws_security_group.consul_sg.id]
     },
     {
       name                          = "worker-group-2"
       instance_type                 = "t3.large"
-      additional_userdata           = "echo opsschool mid project"
-      asg_desired_capacity          = 1
-      additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
+      additional_userdata           = "echo opsschool project"
+      asg_desired_capacity          = 2
+      additional_security_group_ids = [aws_security_group.all_worker_mgmt.id, aws_security_group.consul_sg.id]
     }
   ]
 
