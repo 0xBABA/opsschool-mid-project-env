@@ -1,0 +1,32 @@
+---
+- name: add consul helm repo
+  shell: helm repo add hashicorp https://helm.releases.hashicorp.com
+  tags:
+    - include_consul_role
+    - install_consul_eks
+
+- name: copy chart values.yml file
+  copy:
+    src: ./files/helm_consul_values.yml
+    dest: /home/ubuntu/helm_consul_values.yml
+  tags:
+    - include_consul_role
+    - install_consul_eks
+
+- name: define consul gossip secret
+  shell: kubectl create secret generic consul-gossip-encryption-key --from-literal=key=uDBV4e+LbFW3019YKPxIrg==
+
+- name: deploy consul chart on cluster
+  shell: helm install consul hashicorp/consul --namespace default --values /home/ubuntu/helm_consul_values.yml
+# - name: copy coredns corefile
+#   template:
+#     src: eks_corefile.yml.j2
+#     dest: /home/ubuntu/coredns.yml
+#   tags:
+#     - include_consul_role
+#     - install_consul_eks
+
+# - name: Configure K8s CoreNDS to use Consul
+#   become: false
+#   shell: kubectl apply -f /home/ubuntu/coredns.yaml
+#   ignore_errors: true

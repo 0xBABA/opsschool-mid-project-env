@@ -33,9 +33,11 @@
         ansible_become: yes
       include_role:
         name: consul
-      when: inventory_hostname in (groups.service_instance_true or groups.bootstrap_server_true or groups.bastion_host_true )
+      when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
       tags:
         - include_consul_role
+        - install_consul_services
+        - install_consul_eks
         - configure_consul
 
     - name: include jenkins_server role
