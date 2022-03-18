@@ -55,7 +55,7 @@ variable "ansible_psql_role_vars_filepath" {
 }
 
 variable "db_setup_script_filepath" {
-  description = "file path for sql file used for iitial db setup"
+  description = "file path for sql file used for initial db setup"
   type        = string
   default     = "../ansible/roles/psql/files/setup_db.sql"
 }
