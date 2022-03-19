@@ -1,0 +1,71 @@
+---
+- name: download node_exporter tarball
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_ver }}/node_exporter-{{ node_exporter_ver }}.linux-amd64.tar.gz
+    dest: /tmp/node_exporter-{{ node_exporter_ver }}.linux-amd64.tar.gz
+  tags:
+    - install_ne_services
+
+- name: untar node_exporter tarball
+  unarchive:
+    src: /tmp/node_exporter-{{ node_exporter_ver }}.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+  tags:
+    - install_ne_services
+
+- name: create_node_exporter group
+  group:
+    name: node_exporter
+    system: yes
+  tags:
+    - install_ne_services
+
+- name: create node_exporter user
+  user:
+    name: node_exporter
+    create_home: no
+    system: yes
+  tags:
+    - install_ne_services
+
+- name: copy node_exporter binary to be under PATH
+  copy:
+    src: /tmp/node_exporter-{{ node_exporter_ver }}.linux-amd64/node_exporter
+    dest: /usr/local/bin
+    owner: node_exporter
+    group: node_exporter
+    mode: "0744"
+    remote_src: yes
+  tags:
+    - install_ne_services
+
+- name: create node_exporter textfile_collector
+  file:
+    path: /var/lib/node_exporter/textfile_collector
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+  tags:
+    - install_ne_services
+
+- name: copy node_exporter service file
+  copy:
+    src: ./files/node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+  notify:
+    - start node_exporter service
+  tags:
+    - install_ne_services
+
+- name: get node_exporter service status
+  systemd:
+    name: node_exporter
+  register: node_exporter_service_status
+  tags:
+    - include_node_exporter_role
+
+- debug:
+    var: node_exporter_service_status.status.ActiveState
+  tags:
+    - install_ne_services

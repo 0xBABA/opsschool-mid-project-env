@@ -75,7 +75,7 @@
         ansible_become: yes
       include_role:
         name: install_node_exporter
-      when: inventory_hostname in groups.service_instance_true
+      when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
       tags:
         - include_node_exporter_role
 
