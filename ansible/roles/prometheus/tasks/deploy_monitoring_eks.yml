@@ -8,8 +8,10 @@
 
 - name: copy monitoring manifest files
   copy:
-    src: ./files/kuberenetes-manifests
-    dest: /home/ubuntu/monitoring_manifests
+    src: ./files/kuberenets-manifests/
+    dest: /home/ubuntu/monitoring_manifests/
+    directory_mode: 0644
+    owner: ubuntu
   tags:
     - deploy_monitoring_eks
 
