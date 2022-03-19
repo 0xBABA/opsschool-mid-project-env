@@ -1,0 +1,126 @@
+---
+- name: download prometheus tarball
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v{{prometheus_ver}}/prometheus-{{prometheus_ver}}.linux-amd64.tar.gz
+    dest: /tmp/prometheus-{{ prometheus_ver }}.linux-amd64.tar.gz
+  tags:
+    - install_prometheus_service
+
+- name: untar prometheus tarball
+  unarchive:
+    src: /tmp/prometheus-{{ prometheus_ver }}.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+  tags:
+    - install_prometheus_service
+
+- name: create prometheus group
+  group:
+    name: prometheus
+    system: yes
+  tags:
+    - install_prometheus_service
+
+- name: create prometheus user
+  user:
+    name: prometheus
+    create_home: no
+    system: yes
+    group: prometheus
+  tags:
+    - install_prometheus_service
+
+- name: create configuration and data directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: "0775"
+  loop:
+    - /etc/prometheus/rules
+    - /etc/prometheus/rules.d
+    - /etc/prometheus/files_sd
+    - /var/lib/prometheus
+  tags:
+    - install_prometheus_service
+
+- name: copy prometheus binary to be under PATH
+  copy:
+    src: /tmp/prometheus-{{ prometheus_ver }}.linux-amd64/{{item}}
+    dest: /usr/local/bin
+    owner: prometheus
+    group: prometheus
+    mode: "0744"
+    remote_src: yes
+  loop:
+    - prometheus
+    - promtool
+  tags:
+    - install_prometheus_service
+
+- name: copy consoles and console_libraries to config directory
+  copy:
+    src: /tmp/prometheus-{{ prometheus_ver }}.linux-amd64/{{item}}
+    dest: /etc/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: "0744"
+    remote_src: yes
+  loop:
+    - consoles
+    - console_libraries
+  tags:
+    - install_prometheus_service
+
+- name: copy prometheus service file
+  copy:
+    src: ./files/prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+    group: prometheus
+    owner: prometheus
+  tags:
+    - install_prometheus_service
+
+- name: copy prometheus configuration file
+  copy:
+    src: ./files/prometheus.yml
+    dest: /etc/prometheus
+    group: prometheus
+    owner: prometheus
+  tags:
+    - install_prometheus_service
+    - configure_prometheus
+
+- name: start promtheus service
+  systemd:
+    daemon_reload: yes
+    name: prometheus
+    enabled: yes
+    state: restarted
+  tags:
+    - install_prometheus_service
+    - configure_prometheus
+
+- name: get prometheus service status
+  systemd:
+    name: prometheus
+  register: prometheus_service_status
+  tags:
+    - install_prometheus_service
+
+- debug:
+    var: prometheus_service_status.status.ActiveState
+  tags:
+    - install_prometheus_service
+
+- name: copy prometheus consul service file
+  copy:
+    src: ./files/prometheus-consul-service.json
+    dest: /etc/consul.d/
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
+  tags:
+    - install_prometheus_service
