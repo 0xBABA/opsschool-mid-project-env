@@ -47,7 +47,7 @@ resource "aws_security_group_rule" "rds_psql_from_common_sg" {
   from_port                = aws_db_instance.kandula-db.port
   to_port                  = aws_db_instance.kandula-db.port
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.bastion_sg.id
+  source_security_group_id = aws_security_group.common_sg.id
   description              = "Allow psql port tcp"
   security_group_id        = aws_security_group.rds_sg.id
 }

@@ -11,7 +11,8 @@ resource "aws_instance" "consul_server" {
     aws_security_group.common_sg.id,
     aws_security_group.consul_sg.id,
     aws_security_group.node_exporter_sg.id,
-    aws_security_group.consul_server_sg.id
+    aws_security_group.consul_server_sg.id,
+    aws_security_group.prometheus_sg.id
   ]
 
   metadata_options {

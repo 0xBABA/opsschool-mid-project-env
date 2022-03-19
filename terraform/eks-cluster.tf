@@ -15,18 +15,28 @@ module "eks" {
 
   worker_groups = [
     {
-      name                          = "worker-group-1"
-      instance_type                 = "t3.medium"
-      additional_userdata           = "echo opsschool project"
-      asg_desired_capacity          = 2
-      additional_security_group_ids = [aws_security_group.all_worker_mgmt.id, aws_security_group.consul_sg.id]
+      name                 = "worker-group-1"
+      instance_type        = "t3.medium"
+      additional_userdata  = "echo opsschool project"
+      asg_desired_capacity = 2
+      additional_security_group_ids = [
+        aws_security_group.all_worker_mgmt.id,
+        aws_security_group.consul_sg.id,
+        aws_security_group.node_exporter_sg.id,
+        aws_security_group.prometheus_sg.id
+      ]
     },
     {
-      name                          = "worker-group-2"
-      instance_type                 = "t3.large"
-      additional_userdata           = "echo opsschool project"
-      asg_desired_capacity          = 2
-      additional_security_group_ids = [aws_security_group.all_worker_mgmt.id, aws_security_group.consul_sg.id]
+      name                 = "worker-group-2"
+      instance_type        = "t3.large"
+      additional_userdata  = "echo opsschool project"
+      asg_desired_capacity = 2
+      additional_security_group_ids = [
+        aws_security_group.all_worker_mgmt.id,
+        aws_security_group.consul_sg.id,
+        aws_security_group.node_exporter_sg.id,
+        aws_security_group.prometheus_sg.id
+      ]
     }
   ]
 
@@ -44,8 +54,8 @@ module "eks" {
     },
     {
       groups   = ["system:masters"]
-      userarn  = aws_instance.boostrap_server.arn
-      username = aws_instance.boostrap_server.id
+      userarn  = aws_instance.bootstrap_server.arn
+      username = aws_instance.bootstrap_server.id
     },
   ]
 

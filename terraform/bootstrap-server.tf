@@ -1,4 +1,4 @@
-resource "aws_instance" "boostrap_server" {
+resource "aws_instance" "bootstrap_server" {
   ami                         = data.aws_ami.ubuntu-18.id
   instance_type               = "t2.micro"
   key_name                    = aws_key_pair.project_key.key_name
