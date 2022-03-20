@@ -118,9 +118,10 @@
     name: jenkins
     image: jenkins/jenkins
     detach: yes
-    ports:
-      - "8080:8080"
-      - "50000:50000"
+    # ports:
+    #   - "8080:8080"
+    #   - "50000:50000"
+    network_mode: host
     restart_policy: always
     container_default_behavior: compatibility
     env:
