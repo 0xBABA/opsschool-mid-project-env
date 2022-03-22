@@ -9,7 +9,7 @@ filebeat.modules:
     syslog:
       enabled: true
     auth:
-      enabled: false
+      enabled: true
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
@@ -28,8 +28,10 @@ processors:
   - add_cloud_metadata: ~
 
 output.elasticsearch:
-  hosts: [ "project-elk-0.node.consul:9200" ]
+  hosts: ["project-elk-0.node.consul:9200"]
   index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
-## OR
-#output.logstash:
-#  hosts: [ "127.0.0.1:5044" ]
+
+setup.kibana:
+  host: "project-elk-0.node.consul:5601"
+  protocol: "http"
+  ssl.enabled: false

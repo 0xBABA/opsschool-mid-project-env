@@ -1,35 +1,15 @@
 ---
-- name: download filebeat deb file
-  get_url:
-    url: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-oss-7.11.0-amd64.deb
-    dest: /tmp/filebeat-oss-7.11.0-amd64.deb
-  tags: 
-    - include_filebeat_role
-
-- name: install filebeat from deb file
-  apt: 
-    deb: /tmp/filebeat-oss-7.11.0-amd64.deb
+- name: install filebeat on ec2 instances
+  include_tasks: install_filebeat_services.yml
+  when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
   tags:
     - include_filebeat_role
-
-- name: keep filebeat original config yml
-  command: mv /etc/filebeat/filebeat.yml /etc/filebeat/filebeat.yml.BCK
-
-- name: copy filebeat config yml
-  copy:
-    src: ./files/filebeat.yml
-    dest: /etc/filebeat/
-  tags:
-    - include_filebeat_role
+    - install_filebeat_services
     - configure_filebeat
 
-- name: start filebeat service
-  systemd:
-    daemon_reload: yes
-    name: filebeat
-    enabled: yes
-    state: restarted
+- name: deploy filebeat on eks cluster
+  include_tasks: deploy_filebeat_eks.yml
+  when: inventory_hostname in lookup('inventory_hostnames', 'bootstrap_server_true')
   tags:
     - include_filebeat_role
-    - configure_filebeat
-
+    - deploy_filebeat_eks
