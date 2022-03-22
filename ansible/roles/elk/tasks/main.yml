@@ -3,14 +3,22 @@
   get_url:
     url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.10.2-amd64.deb
     dest: /tmp/elasticsearch-oss-7.10.2-amd64.deb
-  tags: 
+  tags:
     - include_elk_role
 
 - name: install elasticsearch from deb file
-  apt: 
+  apt:
     deb: /tmp/elasticsearch-oss-7.10.2-amd64.deb
   tags:
     - include_elk_role
+
+- name: copy elasticsearch.yml configuration
+  copy:
+    src: ./files/elasticsearch.yml
+    dest: /etc/kibana/
+  tags:
+    - include_elk_role
+    - configure_elk
 
 - name: start elasticsearch service
   systemd:
@@ -20,6 +28,7 @@
     state: restarted
   tags:
     - include_elk_role
+    - configure_elk
 
 - name: get elasticsearch service status
   systemd:
@@ -27,22 +36,23 @@
   register: elasticsearch_service_status
   tags:
     - include_elk_role
+    - configure_elk
 
 - debug:
     var: elasticsearch_service_status.status.ActiveState
   tags:
     - include_elk_role
-
+    - configure_elk
 
 - name: download kibana deb file
   get_url:
     url: https://artifacts.elastic.co/downloads/kibana/kibana-oss-7.10.2-amd64.deb
     dest: /tmp/kibana-oss-7.10.2-amd64.deb
-  tags: 
+  tags:
     - include_elk_role
 
 - name: install kibana from deb file
-  apt: 
+  apt:
     deb: /tmp/kibana-oss-7.10.2-amd64.deb
   tags:
     - include_elk_role
