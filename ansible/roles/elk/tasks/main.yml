@@ -15,7 +15,7 @@
 - name: copy elasticsearch.yml configuration
   copy:
     src: ./files/elasticsearch.yml
-    dest: /etc/kibana/
+    dest: /etc/elasticsearch/
   tags:
     - include_elk_role
     - configure_elk
