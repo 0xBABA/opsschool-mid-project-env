@@ -29,7 +29,7 @@ resource "aws_instance" "jenkins_server" {
 resource "aws_instance" "jenkins_agent" {
   count                       = var.num_jenkins_agents
   ami                         = data.aws_ami.ubuntu-18.id
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   key_name                    = aws_key_pair.project_key.key_name
   iam_instance_profile        = aws_iam_instance_profile.jenkins_agents.name
   subnet_id                   = element(module.vpc.private_subnet_id, count.index)
