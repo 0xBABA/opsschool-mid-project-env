@@ -55,6 +55,18 @@ resource "aws_lb_listener" "jenkins_alb" {
   }
 }
 
+resource "aws_alb_listener" "jenkins_https_alb" {
+  load_balancer_arn = aws_lb.jenkins_alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = aws_acm_certificate.kansula_tls.arn
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.jenkins_alb.arn
+  }
+}
+
 resource "aws_security_group" "jenkins_alb_sg" {
   name        = "jenkins-alb-sg"
   description = "Allow jenkins inbound traffic from world"
@@ -71,6 +83,15 @@ resource "aws_security_group_rule" "jenkins_alb_http_all" {
   type              = "ingress"
   from_port         = 80
   to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.jenkins_alb_sg.id
+}
+
+resource "aws_security_group_rule" "jenkins_alb_https_all" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.jenkins_alb_sg.id
