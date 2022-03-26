@@ -44,7 +44,11 @@ resource "tls_self_signed_cert" "kandula_tls" {
   ]
 }
 
-resource "aws_acm_certificate" "kansula_tls" {
+resource "aws_acm_certificate" "kandula_tls" {
   private_key      = tls_private_key.kandula_tls.private_key_pem
   certificate_body = tls_self_signed_cert.kandula_tls.cert_pem
+}
+
+output "kandula_tls_arn" {
+  value = aws_acm_certificate.kandula_tls.arn
 }

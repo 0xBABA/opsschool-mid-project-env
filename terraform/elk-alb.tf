@@ -63,7 +63,7 @@ resource "aws_alb_listener" "elk_https_alb" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.kansula_tls.arn
+  certificate_arn   = aws_acm_certificate.kandula_tls.arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.elk_alb.arn
