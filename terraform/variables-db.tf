@@ -8,7 +8,7 @@ variable "db_name" {
 variable "db_secret_name" {
   description = "identifying name for db secrets in secretsmanager"
   type        = string
-  default     = "project-db"
+  default     = "kandula-db-test"
 }
 
 variable "db_storage" {

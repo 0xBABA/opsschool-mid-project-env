@@ -21,7 +21,7 @@ data "http" "myip" {
 }
 
 data "aws_secretsmanager_secret" "kandula_db" {
-  name = "kandula-db-test"
+  name = var.db_secret_name
 }
 
 data "aws_secretsmanager_secret_version" "kandula_db" {
