@@ -54,6 +54,7 @@
       - containerd.io
       - kubectl
       - trivy
+      - awscli
     state: present
     update_cache: yes
   notify:
