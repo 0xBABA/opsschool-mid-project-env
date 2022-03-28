@@ -19,3 +19,11 @@ data "aws_ami" "ubuntu-18" {
 data "http" "myip" {
   url = "http://ifconfig.me"
 }
+
+data "aws_secretsmanager_secret" "kandula_db" {
+  name = "kandula-db-test"
+}
+
+data "aws_secretsmanager_secret_version" "kandula_db" {
+  secret_id = data.aws_secretsmanager_secret.kandula_db.id
+}

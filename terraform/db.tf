@@ -1,4 +1,6 @@
-
+locals {
+  db_credentials = jsondecode(data.aws_secretsmanager_secret_version.kandula_db.secret_string)
+}
 
 resource "aws_db_subnet_group" "kandula-db" {
   name       = format("%s-db-sn-grp", var.global_name_prefix)
@@ -9,6 +11,7 @@ resource "aws_db_subnet_group" "kandula-db" {
   }
 }
 
+
 resource "aws_db_instance" "kandula-db" {
   allocated_storage      = var.db_storage
   engine                 = var.db_engine["engine"]
@@ -17,8 +20,8 @@ resource "aws_db_instance" "kandula-db" {
   instance_class         = var.db_instance_class
   port                   = var.db_port
   name                   = var.db_name
-  username               = var.db_credentials.admin_user
-  password               = var.db_credentials.admin_password
+  username               = local.db_credentials["admin_user"]
+  password               = local.db_credentials["admin_password"]
   skip_final_snapshot    = true
   publicly_accessible    = false
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
@@ -79,16 +82,17 @@ resource "local_file" "ansible_psql_role_vars" {
   sensitive_content = templatefile("${path.module}/templates/db_vars.tftpl", {
     db_name           = var.db_name,
     db_host           = aws_db_instance.kandula-db.address,
-    db_admin_user     = var.db_credentials.admin_user,
-    db_admin_password = var.db_credentials.admin_password
+    db_admin_user     = local.db_credentials["admin_user"],
+    db_admin_password = local.db_credentials["admin_password"]
   })
 }
+
 
 resource "local_file" "db_setup_script" {
   filename        = var.db_setup_script_filepath
   file_permission = "0644"
   sensitive_content = templatefile("${path.module}/templates/setup_db.tftpl", {
-    app_user          = var.db_credentials.app_user,
-    app_user_password = var.db_credentials.app_user_password
+    app_user          = local.db_credentials["username"],
+    app_user_password = local.db_credentials["password"]
   })
 }

@@ -1,13 +1,3 @@
-variable "db_credentials" {
-  sensitive   = true
-  description = "crednetials for rds db connection"
-  type = object({
-    admin_user        = string
-    admin_password    = string
-    app_user          = string
-    app_user_password = string
-  })
-}
 
 variable "db_name" {
   description = "name for RDS postgres sql db"
