@@ -20,6 +20,8 @@ The default secret name is defined in variables-db.tf, you can change this or pr
 
 3. This configuration makes use of a public, simple, vpc module that provisions a vpc with 2 private and 2 public subnets. if you opt for using a different vpc module or provision on your own please update vpc.tf accordingly.
 
+4. The apllication will run with a dedicated app user credentials. This IAM user is expected to be pre-provisioned before applying this configuration. Its credentials should be stored/updated in jenkins as secrets. See app-user-policy.json in the IAM directory for required permissions for this user. 
+
 ## Usage:
 1. Create s3 bucket to hold the state of the configuration 
 ```
