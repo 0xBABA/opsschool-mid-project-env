@@ -1,0 +1,13 @@
+---
+- name: copy metrics server manifest
+  copy:
+    src: ./files/kubernetes_metrics_server.yml
+    dest: /home/ubuntu/
+    owner: ubuntu
+  tags:
+    - install_metrics_server
+
+- name: deploy metrics server on cluster
+  shell: kubectl apply -f /home/ubuntu/kubernetes_metrics_server.yml
+  tags:
+    - install_metrics_server

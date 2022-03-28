@@ -18,6 +18,7 @@
         - include_bootstrap_role
         - install_kubectl
         - install_helm
+        - install_metrics_server
 
     - name: include psql role
       vars:
@@ -69,6 +70,7 @@
         - install_grafana
         - configure_prometheus
         - configure_grafana
+        - deploy_monitoring_eks
 
     - name: include node_exporter role
       vars:
@@ -78,6 +80,7 @@
       when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
       tags:
         - include_node_exporter_role
+        - deploy_ne_eks
 
     - name: include elk role
       vars:
