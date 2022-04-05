@@ -1,47 +1,62 @@
 ---
 - name: opsschool final-project playbook
   # hosts: service_instance_true
-  hosts: 
+  hosts:
     - service_instance_true
-    - bastion_host_true 
+    - bastion_host_true
+    - bootstrap_server_true
   gather_facts: yes
 
   tasks:
-    - name: include consul role
+    - name: include bootstrap role
       vars:
         ansible_become: yes
       include_role:
-        name: consul
-      when: inventory_hostname in groups.service_instance_true
+        name: bootstrap
+      when: inventory_hostname in groups.bootstrap_server_true
       tags:
-        - include_consul_role
-        - configure_consul
+        - include_bootstrap_role
+        - install_kubectl
+        - install_helm
+        - install_metrics_server
 
     - name: include psql role
       vars:
         ansible_become: yes
       include_role:
         name: psql
-      when: inventory_hostname in groups.bastion_host_true
+      when: inventory_hostname in groups.bootstrap_server_true
       tags:
         - include_psql_role
-  
+
+    - name: include consul role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: consul
+      when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
+      tags:
+        - include_consul_role
+        - install_consul_services
+        - install_consul_eks
+        - configure_consul
+
     - name: include jenkins_server role
       vars:
         ansible_become: yes
-      include_role: 
+      include_role:
         name: jenkins-server
       when: inventory_hostname in groups.jenkins_server_true
-      tags: 
+      tags:
         - include_jenkins_role
 
     - name: include jenkins_agents role
       vars:
         ansible_become: yes
-      include_role: 
+      include_role:
         name: jenkins-agents
       when: inventory_hostname in groups.jenkins_agent_true
-      tags: 
+      tags:
         - include_jenkins_agent_role
 
     - name: include prometheus role
@@ -49,20 +64,23 @@
         ansible_become: yes
       include_role:
         name: prometheus
-      when: inventory_hostname in groups.monitoring_true
+      when: inventory_hostname in lookup('inventory_hostnames', 'monitoring_true:bootstrap_server_true')
       tags:
         - include_prometheus_role
         - install_grafana
         - configure_prometheus
+        - configure_grafana
+        - deploy_monitoring_eks
 
     - name: include node_exporter role
       vars:
         ansible_become: yes
       include_role:
         name: install_node_exporter
-      when: inventory_hostname in groups.service_instance_true
+      when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
       tags:
         - include_node_exporter_role
+        - deploy_ne_eks
 
     - name: include elk role
       vars:
@@ -73,3 +91,13 @@
       tags:
         - include_elk_role
         - configure_kibana
+
+    - name: include filebeat role
+      vars:
+        ansible_become: yes
+      include_role:
+        name: filebeat
+      when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
+      tags:
+        - include_filebeat_role
+        - configure_filebeat

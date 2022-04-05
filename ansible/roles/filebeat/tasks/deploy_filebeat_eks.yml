@@ -1,0 +1,12 @@
+---
+- name: copy filebeat manifest file
+  copy:
+    src: ./files/filebeat-deploy-eks.yml
+    dest: /home/ubuntu/
+  tags:
+    - deploy_filebeat_eks
+
+- name: deploy filebeat on cluster
+  shell: kubectl apply -f /home/ubuntu/filebeat-deploy-eks.yml
+  tags:
+    - deploy_filebeat_eks

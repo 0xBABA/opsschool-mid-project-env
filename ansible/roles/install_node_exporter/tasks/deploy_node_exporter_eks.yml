@@ -1,0 +1,22 @@
+---
+- name: create node_exporter_manifests directory
+  file:
+    path: /home/ubuntu/node_exporter_manifests
+    state: directory
+  tags:
+    - deploy_ne_eks
+
+- name: copy node_exporter manifest files
+  copy:
+    src: "{{ item }}"
+    dest: /home/ubuntu/node_exporter_manifests
+  loop:
+    - ./files/ne-daemonset.yml
+    - ./files/ne-svc.yml
+  tags:
+    - deploy_ne_eks
+
+- name: deploy node_exporter
+  shell: kubectl apply -f /home/ubuntu/node_exporter_manifests
+  tags:
+    - deploy_ne_eks

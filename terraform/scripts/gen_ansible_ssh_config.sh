@@ -7,18 +7,10 @@ Host bastion
   Hostname ${1}
   User ubuntu
   IdentityFile ../terraform/opsschool_project.pem
-  ForwardAgent yes
-  ControlMaster auto
-  ControlPath ~/.ssh/ansible-%r@%h:%p
-  ControlPersist 5m
 
-
-Host 10.0.12.*
-  ProxyCommand ssh ubuntu@${1} -W %h:%p 
+Host 10.0.*.*
+  User ubuntu
   IdentityFile ../terraform/opsschool_project.pem
-
-
-Host 10.0.11.*
-  ProxyCommand ssh ubuntu@${1} -W %h:%p 
-  IdentityFile ../terraform/opsschool_project.pem
+  ProxyJump bastion
+  StrictHostKeyChecking no
 EOF

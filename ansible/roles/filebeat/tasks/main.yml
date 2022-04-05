@@ -1,0 +1,15 @@
+---
+- name: install filebeat on ec2 instances
+  include_tasks: install_filebeat_services.yml
+  when: inventory_hostname in lookup('inventory_hostnames', 'service_instance_true:bootstrap_server_true:bastion_host_true')
+  tags:
+    - include_filebeat_role
+    - install_filebeat_services
+    - configure_filebeat
+
+- name: deploy filebeat on eks cluster
+  include_tasks: deploy_filebeat_eks.yml
+  when: inventory_hostname in lookup('inventory_hostnames', 'bootstrap_server_true')
+  tags:
+    - include_filebeat_role
+    - deploy_filebeat_eks

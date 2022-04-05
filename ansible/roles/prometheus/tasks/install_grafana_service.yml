@@ -1,0 +1,69 @@
+---
+- name: add grafana's official GPG key
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+  tags:
+    - install_grafana_service
+
+- name: add grafana stable repository to apt
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+  tags:
+    - install_grafana_service
+
+- name: update apt package index and install dependencies
+  apt:
+    name:
+      - grafana
+    state: latest
+    update_cache: yes
+  tags:
+    - install_grafana_service
+
+- name: restore grafana from backup
+  copy:
+    src: ./files/grafana.db
+    dest: /var/lib/grafana/
+    owner: grafana
+    group: grafana
+    mode: "0640"
+  tags:
+    - install_grafana_service
+    - configure_grafana
+
+- name: start grafana service
+  systemd:
+    daemon_reload: yes
+    name: grafana-server
+    enabled: yes
+    state: restarted
+  tags:
+    - install_grafana_service
+    - configure_grafana
+
+- name: get grafana service status
+  systemd:
+    name: grafana-server
+  register: grafana_service_status
+  tags:
+    - install_grafana_service
+    - configure_grafana
+
+- debug:
+    var: grafana_service_status.status.ActiveState
+  tags:
+    - install_grafana_service
+    - configure_grafana
+
+- name: copy grafana consul service file
+  copy:
+    src: ./files/grafana-consul-service.json
+    dest: /etc/consul.d/
+    group: consul
+    owner: consul
+  notify:
+    - restart consul service
+  tags:
+    - install_grafana_service

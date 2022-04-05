@@ -9,3 +9,4 @@ terraform/*.tfplan
 terraform/opsschool_project.pem
 ansible/roles/psql/vars/main.yml
 ansible/roles/psql/files/setup_db.sql
+ansible/roles/bootstrap/vars/main.yml

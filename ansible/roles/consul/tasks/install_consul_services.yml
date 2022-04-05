@@ -1,0 +1,113 @@
+---
+- name: add Hashicorp's official GPG key
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+  tags:
+    - install_consul_services
+
+- name: add Hashicorp main repository to apt
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ansible_distribution_release}} main"
+    state: present
+  tags:
+    - install_consul_services
+
+- name: install dependencies on target ec2 instances
+  apt:
+    name:
+      - dnsmasq
+      - consul=1.8.5
+    state: present
+    update_cache: yes
+  tags:
+    - install_consul_services
+
+- name: configure dnsmasq
+  copy:
+    src: ./files/dnsmasq.conf
+    dest: "{{ dnsmasq_configuration_file }}"
+    mode: "0644"
+  notify:
+    - test dnsmasq configuration
+    - restart dnsmasq
+  tags:
+    - install_consul_services
+
+- name: configure resolved.conf
+  copy:
+    src: resolved.conf
+    dest: "{{ resolved_conf_file_path }}"
+    mode: "0644"
+  notify:
+    - restart systemd-resolved
+  tags:
+    - install_consul_services
+
+- name: flush handlers
+  meta: flush_handlers
+
+- name: create consul group
+  group:
+    name: consul
+    state: present
+  tags:
+    - install_consul_services
+
+- name: create consul user
+  user:
+    name: consul
+    group: consul
+  tags:
+    - install_consul_services
+
+- name: setup consul directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: consul
+    owner: consul
+  loop:
+    - /opt/consul
+    - /etc/consul.d
+    - /run/consul
+  tags:
+    - install_consul_services
+
+- name: configure consul service
+  copy:
+    src: ./files/consul.service
+    dest: "{{ consul_service_conf_file_path }}"
+    group: consul
+    owner: consul
+  tags:
+    - install_consul_services
+    - configure_consul
+
+- name: configure consul
+  become: yes
+  become_user: consul
+  template:
+    src: consul.config.json.j2
+    dest: "{{ consul_configuration_file_path }}"
+  tags:
+    - install_consul_services
+    - configure_consul
+
+- name: update node_name from ec2 Name tag
+  become: yes
+  become_user: consul
+  shell: sed -i "s|REPLACE_ME|\"$(curl http://169.254.169.254/latest/meta-data/tags/instance/Name)\"|" {{ consul_configuration_file_path }}
+  tags:
+    - install_consul_services
+    - configure_consul
+
+- name: enable and start consul.d service
+  systemd:
+    daemon_reload: yes
+    name: consul
+    enabled: yes
+    state: restarted
+  tags:
+    - install_consul_services
+    - configure_consul

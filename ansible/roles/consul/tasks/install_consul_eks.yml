@@ -1,0 +1,46 @@
+---
+- name: add consul helm repo
+  shell: helm repo add hashicorp https://helm.releases.hashicorp.com
+  tags:
+    - install_consul_eks
+
+- name: copy chart values.yml file
+  copy:
+    src: ./files/helm_consul_values.yml
+    dest: /home/ubuntu/helm_consul_values.yml
+  tags:
+    - install_consul_eks
+
+- name: deploy consul chart on cluster
+  shell: helm install consul hashicorp/consul --set global.name=consul --create-namespace --namespace consul -f /home/ubuntu/helm_consul_values.yml
+  tags:
+    - install_consul_eks
+
+- name: define consul gossip secret
+  shell: kubectl create secret generic consul-gossip-encryption-key --from-literal=key=uDBV4e+LbFW3019YKPxIrg== -n consul
+  tags:
+    - install_consul_eks
+
+- name: grab consul-dns cluster-ip
+  shell: kubectl get svc -n consul | grep consul-dns | awk '{print $3}'
+  register: consul_dns_cluster_ip
+  tags:
+    - install_consul_eks
+
+- name: echo consul_dns_cluster_ip
+  debug:
+    msg: "consul dns cluster-ip is: {{consul_dns_cluster_ip.stdout_lines[0]}}"
+  tags:
+    - install_consul_eks
+
+- name: copy coredns corefile
+  template:
+    src: eks_corefile.yml.j2
+    dest: /home/ubuntu/coredns.yml
+  tags:
+    - install_consul_eks
+
+- name: configure k8s coredns to use consul dns
+  shell: kubectl apply -f /home/ubuntu/coredns.yml
+  tags:
+    - install_consul_eks

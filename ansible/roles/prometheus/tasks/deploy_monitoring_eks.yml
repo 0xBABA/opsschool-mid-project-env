@@ -1,0 +1,21 @@
+---
+- name: create monitoring manifests directory
+  file:
+    path: /home/ubuntu/monitoring_manifests
+    state: directory
+  tags:
+    - deploy_monitoring_eks
+
+- name: copy monitoring manifest files
+  copy:
+    src: ./files/kuberenets-manifests/
+    dest: /home/ubuntu/monitoring_manifests/
+    directory_mode: 0644
+    owner: ubuntu
+  tags:
+    - deploy_monitoring_eks
+
+- name: deploy prometheus and kube-state-metrics
+  shell: kubectl apply -f /home/ubuntu/monitoring_manifests
+  tags:
+    - deploy_monitoring_eks

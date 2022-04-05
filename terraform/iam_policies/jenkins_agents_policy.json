@@ -17,6 +17,13 @@
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+      "Action": [
+        "acm:ListCertificates"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
     }
   ]
 }

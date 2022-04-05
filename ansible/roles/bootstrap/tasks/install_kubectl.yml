@@ -1,0 +1,65 @@
+- name: add Kubernetes apt-key for APT repository
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: add Kubernetes APT repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: install kubectl and pip
+  apt:
+    name:
+      - kubectl
+      - python3-pip
+    state: present
+    update_cache: yes
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: install aws cli
+  pip:
+    name: awscli
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: copy over kubeconfig file
+  copy:
+    src: "{{ item }}"
+    dest: /home/ubuntu/kubeconfig
+    owner: ubuntu
+    force: yes
+  with_fileglob:
+    - "../terraform/kubeconfig_project-eks-*"
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: update kubeconfig
+  shell: aws eks --region={{ aws_region }} update-kubeconfig --name {{ cluster_name }}
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: kc get svc
+  shell: kubectl get svc
+  register: kc_get_svc
+  tags:
+    - include_bootstrap_role
+    - install_kubectl
+
+- name: verify cluster connection
+  debug:
+    msg: "{{kc_get_svc.stdout}}"
+  tags:
+    - include_bootstrap_role
+    - install_kubectl

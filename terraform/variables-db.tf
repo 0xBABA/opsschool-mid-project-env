@@ -1,13 +1,3 @@
-variable "db_credentials" {
-  sensitive   = true
-  description = "crednetials for rds db connection"
-  type = object({
-    admin_user        = string
-    admin_password    = string
-    app_user          = string
-    app_user_password = string
-  })
-}
 
 variable "db_name" {
   description = "name for RDS postgres sql db"
@@ -18,7 +8,7 @@ variable "db_name" {
 variable "db_secret_name" {
   description = "identifying name for db secrets in secretsmanager"
   type        = string
-  default     = "project-db"
+  default     = "kandula-db-test"
 }
 
 variable "db_storage" {
@@ -55,7 +45,7 @@ variable "ansible_psql_role_vars_filepath" {
 }
 
 variable "db_setup_script_filepath" {
-  description = "file path for sql file used for iitial db setup"
+  description = "file path for sql file used for initial db setup"
   type        = string
   default     = "../ansible/roles/psql/files/setup_db.sql"
 }
